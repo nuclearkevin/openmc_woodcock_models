@@ -7,6 +7,10 @@ import pandas as pd
 from matplotlib import pyplot as plt
 
 # Adapted from the OpenMC Jezebel example problem.
+R_SPHERE = 6.3849
+NUM_TALLY_MESH_ELEMS = 51
+NUM_ENTROPY_MESH_ELEMS = 5
+
 def jezebel(use_surface, particles, active, inactive, use_entropy) -> openmc.Model:
   jezebel = openmc.Model()
 
@@ -20,8 +24,7 @@ def jezebel(use_surface, particles, active, inactive, use_entropy) -> openmc.Mod
   jezebel.materials.append(pu)
 
   # Create a single cell filled with the Pu metal.
-  r_sphere = 6.3849
-  sphere = openmc.Sphere(r = r_sphere, boundary_type = 'vacuum')
+  sphere = openmc.Sphere(r = R_SPHERE, boundary_type = 'vacuum')
   cell = openmc.Cell(fill = pu, region = -sphere)
   jezebel.geometry = openmc.Geometry([cell])
 
@@ -34,10 +37,10 @@ def jezebel(use_surface, particles, active, inactive, use_entropy) -> openmc.Mod
   jezebel.tallies.append(spectrum_tally)
 
   # Create mesh tally for the spatial flux distribution.
-  tally_mesh = openmc.RegularMesh()
-  tally_mesh.dimension = [50, 50, 50]
-  tally_mesh.lower_left = [-r_sphere, -r_sphere, -r_sphere]
-  tally_mesh.upper_right = [r_sphere, r_sphere, r_sphere]
+  tally_mesh = openmc.RegularMesh(name = 'Tally mesh')
+  tally_mesh.dimension = (NUM_TALLY_MESH_ELEMS, NUM_TALLY_MESH_ELEMS, NUM_TALLY_MESH_ELEMS)
+  tally_mesh.lower_left = (-R_SPHERE, -R_SPHERE, -R_SPHERE)
+  tally_mesh.upper_right = (R_SPHERE, R_SPHERE, R_SPHERE)
   mesh_filter = openmc.MeshFilter(tally_mesh)
   spatial_flux_tally = openmc.Tally(name = 'spatial flux', tally_id = 1)
   spatial_flux_tally.filters = [mesh_filter]
@@ -57,10 +60,10 @@ def jezebel(use_surface, particles, active, inactive, use_entropy) -> openmc.Mod
     jezebel.settings.delta_tracking = True
 
   if use_entropy:
-    entropy_mesh = openmc.RegularMesh()
-    entropy_mesh.lower_left = (-r_sphere, -r_sphere, -r_sphere)
-    entropy_mesh.upper_right = (r_sphere, r_sphere, r_sphere)
-    entropy_mesh.dimension = (5, 5, 5)
+    entropy_mesh = openmc.RegularMesh(name = 'Entropy mesh')
+    entropy_mesh.dimension = (NUM_ENTROPY_MESH_ELEMS, NUM_ENTROPY_MESH_ELEMS, NUM_ENTROPY_MESH_ELEMS)
+    entropy_mesh.lower_left = (-R_SPHERE, -R_SPHERE, -R_SPHERE)
+    entropy_mesh.upper_right = (R_SPHERE, R_SPHERE, R_SPHERE)
     jezebel.settings.entropy_mesh = entropy_mesh
 
   return jezebel
@@ -79,7 +82,6 @@ def main():
                       help = 'Number of inactive batches. Defaults to 100.')
   parser.add_argument('--entropy', action = 'store_true', dest = 'entropy', default = False,
                       help = 'Whether source convergence should be assessed with Shannon entropy or not.')
-
   args = parser.parse_args()
 
   model = jezebel(args.use_surface, args.particles, args.active_batches, args.inactive_batches, args.entropy)
@@ -88,17 +90,38 @@ def main():
   if args.run:
     model.run(apply_tally_results=True)
 
+    # Extract tally data for the spectrum.
     energy_edges = model.tallies[0].filters[0].values
     spectrum_tally_res = model.tallies[0].get_slice(scores=['flux'])
     spectrum_mean = spectrum_tally_res.mean.ravel()
     three_sigma   = 3.0 * spectrum_tally_res.std_dev.ravel()
-    results_df = pd.DataFrame({ 'lower_edges' : energy_edges[:-1], 'upper_edges' : energy_edges[1:],
-                                  'mean' : spectrum_mean, '3_sigma' : three_sigma })
+    spectrum_results_df = pd.DataFrame({ 'lower_edges' : energy_edges[:-1], 'upper_edges' : energy_edges[1:],
+                                         'mean' : spectrum_mean, '3_sigma' : three_sigma })
+
+    # Extract tally data for spatial flux plots. Picking the centerplane to make things easier.
+    spatial_tally_res = model.tallies[1].get_slice(scores=['flux'])
+    spatial_tally_mean = spatial_tally_res.mean.ravel().reshape(NUM_TALLY_MESH_ELEMS, NUM_TALLY_MESH_ELEMS, NUM_TALLY_MESH_ELEMS)[:,:,25]
+    spatial_tally_std_dev = spatial_tally_res.std_dev.ravel().reshape(NUM_TALLY_MESH_ELEMS, NUM_TALLY_MESH_ELEMS, NUM_TALLY_MESH_ELEMS)[:,:,25]
+    # I cannot for the life of me get numpy to do this for me. There has to be a better way...
+    single_axis = np.linspace(-R_SPHERE, R_SPHERE, NUM_TALLY_MESH_ELEMS)
+    xx = np.zeros(NUM_TALLY_MESH_ELEMS ** 2)
+    yy = np.zeros(NUM_TALLY_MESH_ELEMS ** 2)
+    i = 0
+    for x in single_axis:
+      for y in single_axis:
+        xx[i] = x
+        yy[i] = y
+        i += 1
+    mesh_results_df = pd.DataFrame({ 'x' : xx.ravel(), 'y' : yy.ravel(),
+                                     'mean' : spatial_tally_mean.ravel(),
+                                     'sigma' : spatial_tally_std_dev.ravel() })
+
     if args.use_surface:
-      results_df.to_csv(f'surface_spectrum_p{args.particles}_ab{args.active_batches}_ib{args.inactive_batches}.csv', index=False)
+      spectrum_results_df.to_csv(f'surface_spectrum_p{args.particles}_ab{args.active_batches}_ib{args.inactive_batches}.csv', index=False)
+      mesh_results_df.to_csv(f'surface_mesh_p{args.particles}_ab{args.active_batches}_ib{args.inactive_batches}.csv', index=False)
     else:
-      results_df.to_csv(f'delta_spectrum_p{args.particles}_ab{args.active_batches}_ib{args.inactive_batches}.csv', index=False)
-    plt.show()
+      spectrum_results_df.to_csv(f'delta_spectrum_p{args.particles}_ab{args.active_batches}_ib{args.inactive_batches}.csv', index=False)
+      mesh_results_df.to_csv(f'delta_mesh_p{args.particles}_ab{args.active_batches}_ib{args.inactive_batches}.csv', index=False)
 
 if __name__ == "__main__":
   main()

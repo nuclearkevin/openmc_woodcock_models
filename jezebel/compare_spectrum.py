@@ -6,7 +6,8 @@ import pandas as pd
 from matplotlib import pyplot as plt
 
 def main():
-  parser = ap.ArgumentParser(prog = 'Compare Spectrum', description = 'Compares the spectrum between delta tracking and surface tracking.')
+  parser = ap.ArgumentParser(prog = 'Compare Spectrum',
+                             description = 'Compares the spectrum between delta tracking and surface tracking.')
   parser.add_argument('-p', type = int, dest = 'particles', default = 1000,
                       help = 'Number of particles to run per batch. Defaults to 1000.')
   parser.add_argument('--active', type = int, dest = 'active_batches', default = 1000,

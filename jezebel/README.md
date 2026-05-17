@@ -2,7 +2,7 @@
 
 ## 11th Gen Intel Core™ i7-11800H (16 threads)
 
-### Hash: 86ada06bd372bdaca3c4220d8952e6b785b7a640
+Hash: 86ada06bd372bdaca3c4220d8952e6b785b7a640
 
 - Particles: 1,000
 - Active batches: 1,000
@@ -38,11 +38,64 @@
 | Inactive Tracking Rate  | 2.39271e+06          | 2.20391e+06          |
 
 
+### Spectra
+
 <p align="center">
   <img src="figures/spectrum_comp_p1000_ab1000_ib100.png" width="300" />
   <img src="figures/spectrum_comp_p10000_ab1000_ib100.png" width="300" />
   <img src="figures/spectrum_comp_p100000_ab1000_ib100.png" width="300" />
 </p>
 <p align="center">
-1000, 10000, and 100000 particles per batch (left to right).
+Spectrum comparisons for 1000, 10000, and 100000 particles per batch (left to right).
+</p>
+
+### Flux Distributions
+
+<p align="center">
+  <img src="figures/flux_dis_p1000_ab1000_ib100.png" />
+</p>
+<p align="center">
+Flux distribution with 1000 particles per batch.
+</p>
+<p align="center">
+  <img src="figures/flux_dis_p10000_ab1000_ib100.png" />
+</p>
+<p align="center">
+Flux distribution with 10000 particles per batch.
+</p>
+<p align="center">
+  <img src="figures/flux_dis_p100000_ab1000_ib100.png" />
+</p>
+<p align="center">
+Flux distribution with 100000 particles per batch.
+</p>
+
+### Flux Statistical Error Distributions
+
+<p align="center">
+  <img src="figures/flux_rel_dis_p1000_ab1000_ib100.png" />
+</p>
+<p align="center">
+Flux statistical relative error distribution with 1000 particles per batch.
+</p>
+<p align="center">
+  <img src="figures/flux_rel_dis_p10000_ab1000_ib100.png" />
+</p>
+<p align="center">
+Flux statistical relative error distribution with 10000 particles per batch.
+</p>
+<p align="center">
+  <img src="figures/flux_rel_dis_p100000_ab1000_ib100.png" />
+</p>
+<p align="center">
+Flux statistical relative error distribution with 100000 particles per batch.
+</p>
+
+<p align="center">
+  <img src="figures/spatial_comp_p1000_ab1000_ib100.png" width="300" />
+  <img src="figures/spatial_comp_p10000_ab1000_ib100.png" width="300" />
+  <img src="figures/spatial_comp_p100000_ab1000_ib100.png" width="300" />
+</p>
+<p align="center">
+Relative difference distributions between tracking modes for 1000, 10000, and 100000 particles per batch (left to right).
 </p>
