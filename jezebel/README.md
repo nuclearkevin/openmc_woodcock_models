@@ -39,9 +39,9 @@
 
 
 <p align="center">
-  <img src="figures/spectrum_comp_p1000_ab1000_ib100.png" width="200" />
-  <img src="figures/spectrum_comp_p10000_ab1000_ib100.png" width="200" />
-  <img src="figures/spectrum_comp_p100000_ab1000_ib100.png" width="200" />
+  <img src="figures/spectrum_comp_p1000_ab1000_ib100.png" width="300" />
+  <img src="figures/spectrum_comp_p10000_ab1000_ib100.png" width="300" />
+  <img src="figures/spectrum_comp_p100000_ab1000_ib100.png" width="300" />
 </p>
 <p align="center">
 1000, 10000, and 100000 particles per batch (left to right).
