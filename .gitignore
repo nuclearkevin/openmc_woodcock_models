@@ -1,0 +1,48 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+doma
+
+# VSCode stuff
+/.vscode/*
+
+# DOMA outputs and post-processing
+*.txt
+/results*
+*.png
+*.csv
+*.gif
+*.zip
+*.vtr
+
+# Allow .png files in images/*
+!images/*.png

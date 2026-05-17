@@ -1,0 +1,4 @@
+[submodule "openmc"]
+	path = openmc
+	url = https://github.com/nuclearkevin/openmc.git
+	branch = delta_tracking
