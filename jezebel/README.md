@@ -91,6 +91,8 @@ Flux statistical relative error distribution with 10000 particles per batch.
 Flux statistical relative error distribution with 100000 particles per batch.
 </p>
 
+### Relative Error Distributions
+
 <p align="center">
   <img src="figures/spatial_comp_p1000_ab1000_ib100.png" width="300" />
   <img src="figures/spatial_comp_p10000_ab1000_ib100.png" width="300" />
