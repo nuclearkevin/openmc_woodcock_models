@@ -100,7 +100,10 @@ def spatial_plot_rel_diff(case, delta_df, surf_df, score, particles, active_batc
   fig_comp.savefig(f'./{case}/figures/{score}_spatial_comp_p{particles}_ab{active_batches}_ib{inactive_batches}.png')
   plt.close()
 
-def gen_spatial_plots(case, delta_df, surf_df, score, particles, active_batches, inactive_batches):
+def gen_spatial_plots(case, score, particles, active_batches, inactive_batches):
+  delta_df = pd.read_csv(f'./{case}/delta_mesh_p{particles}_ab{active_batches}_ib{inactive_batches}.csv')
+  surf_df  = pd.read_csv(f'./{case}/surface_mesh_p{particles}_ab{active_batches}_ib{inactive_batches}.csv')
+
   spatial_plot_mean(case, delta_df, surf_df, score, particles, active_batches, inactive_batches)
   spatial_plot_stat_rel(case, delta_df, surf_df, score, particles, active_batches, inactive_batches)
   spatial_plot_rel_diff(case, delta_df, surf_df, score, particles, active_batches, inactive_batches)
@@ -113,11 +116,8 @@ def main():
   parser = common.particle_args(parser)
   args = parser.parse_args()
 
-  delta_df = pd.read_csv(f'./{args.case}/delta_mesh_p{args.particles}_ab{args.active_batches}_ib{args.inactive_batches}.csv')
-  surf_df  = pd.read_csv(f'./{args.case}/surface_mesh_p{args.particles}_ab{args.active_batches}_ib{args.inactive_batches}.csv')
-
   for score in common.SCORES:
-    gen_spatial_plots(args.case, delta_df, surf_df, score, args.particles, args.active_batches, args.inactive_batches)
+    gen_spatial_plots(args.case, score, args.particles, args.active_batches, args.inactive_batches)
 
 if __name__ == "__main__":
   main()
