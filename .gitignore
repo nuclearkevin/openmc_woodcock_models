@@ -3,6 +3,7 @@
 *.out
 *.xml
 *.csv
+*.pyc
 
 # VSCode stuff
 /.vscode/*
