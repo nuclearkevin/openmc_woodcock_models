@@ -59,7 +59,6 @@ def fresh_lwr_pincell(use_surface, particles, active, inactive, use_entropy) -> 
   axial_extents = +bottom & -top
 
   ## Bounding water box.
-  ## boundary_type = 'reflective' is broken. Likely an issue with BC handling.
   box = openmc.model.RectangularPrism(PIN_PITCH, PIN_PITCH, boundary_type = 'reflective')
 
   ## Create the geometry and universe.
