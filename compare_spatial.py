@@ -112,7 +112,7 @@ def main():
   parser = ap.ArgumentParser(prog = 'Compare Spatial Distributions',
                              description = 'Compares spatial distributions between delta tracking and surface tracking.')
   parser.add_argument('-c', type = str, dest = 'case', required = True,
-                      help = 'Case to post-process in the format \'case\'/\'model\'. As an example, for a fresh LWR pincell this would be lwr/fresh_pincell')
+                      help = 'Results to post-process in the format \'model\'/\'case\'. As an example, for a fresh LWR pincell this would be lwr/fresh_pincell')
   parser = common.particle_args(parser)
   args = parser.parse_args()
 

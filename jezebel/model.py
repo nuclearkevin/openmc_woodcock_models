@@ -18,7 +18,7 @@ NUM_ENTROPY_MESH_ELEMS = 5
 def jezebel(use_surface, particles, active, inactive, use_entropy) -> openmc.Model:
   jezebel = openmc.Model()
 
-  # Create plutonium metal material
+  # Material (only need Pu metal)
   pu = openmc.Material()
   pu.set_density('sum')
   pu.add_nuclide('Pu239', 3.7047e-02)
@@ -27,7 +27,7 @@ def jezebel(use_surface, particles, active, inactive, use_entropy) -> openmc.Mod
   pu.add_element('Ga', 1.3752e-03)
   jezebel.materials.append(pu)
 
-  # Create a single cell filled with the Pu metal.
+  # Geometry (single cell)
   sphere = openmc.Sphere(r = R_SPHERE, boundary_type = 'vacuum')
   cell = openmc.Cell(fill = pu, region = -sphere)
   jezebel.geometry = openmc.Geometry([cell])
