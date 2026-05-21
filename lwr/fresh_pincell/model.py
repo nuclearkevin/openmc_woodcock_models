@@ -73,7 +73,7 @@ def fresh_lwr_pincell(use_surface, particles, active, inactive, use_entropy) -> 
 
   # Add tallies.
   tals = common.tallies(energy_bin_edges = np.logspace(np.log10(1e-6), np.log10(2.0e7), 101),
-                        mesh_dimension = (11, 11, 1),
+                        mesh_dimension = (51, 51, 1),
                         mesh_ll = lower_left,
                         mesh_ur = upper_right)
   pincell_model.tallies = tals

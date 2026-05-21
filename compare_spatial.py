@@ -9,6 +9,40 @@ import pandas as pd
 from matplotlib import pyplot as plt
 import matplotlib.colors as colors
 
+def spatial_plot_n_sigma(case, delta_df, surf_df, score, particles, active_batches, inactive_batches):
+  delta_points = int(np.ceil(np.sqrt(len(delta_df['x'].to_numpy()))))
+  xx_delta = delta_df['x'].to_numpy().reshape(delta_points, delta_points)
+  yy_delta = delta_df['y'].to_numpy().reshape(delta_points, delta_points)
+  # Delta tracking results
+  delta_mean = delta_df[f'{score}_mean'].to_numpy().reshape(delta_points, delta_points)
+  delta_sigma = delta_df[f'{score}_sigma'].to_numpy().reshape(delta_points, delta_points)
+  # Surface tracking results.
+  surface_mean = surf_df[f'{score}_mean'].to_numpy().reshape(delta_points, delta_points)
+  surface_sigma = surf_df[f'{score}_sigma'].to_numpy().reshape(delta_points, delta_points)
+
+  # Compute 1, 2, and 3 sigma bounds.
+  comparison = np.ones_like(delta_mean) * 4.0
+  for i in range(3, 0, -1):
+    delta_n_sigma_l = delta_mean - i * delta_sigma
+    delta_n_sigma_u = delta_mean + i * delta_sigma
+    surf_n_sigma_l = surface_mean - i * surface_sigma
+    surf_n_sigma_u = surface_mean + i * surface_sigma
+    delta_in_surf = (delta_mean >= surf_n_sigma_l) & (delta_mean <= surf_n_sigma_u)
+    surf_in_delta = (surface_mean >= delta_n_sigma_l) & (surface_mean <= delta_n_sigma_u)
+    comparison[delta_in_surf | surf_in_delta] = i
+
+    comparison[delta_mean == 0.0] = np.inf
+
+  cmap = plt.get_cmap('viridis', 4)
+
+  fig_comp, ax_rel = plt.subplots()
+  bar = ax_rel.pcolormesh(xx_delta, yy_delta, comparison, cmap=cmap, vmin=0.5, vmax=4.5)
+  cbar = fig_comp.colorbar(bar, ax=ax_rel, label = f'$n\\sigma$ Agreement')
+  cbar.ax.set_yticklabels(['', '1', '', '2', '', '3', '', '>3', ''])
+  fig_comp.tight_layout()
+  fig_comp.savefig(f'./{case}/figures/{score}_nsigma_agreement_p{particles}_ab{active_batches}_ib{inactive_batches}.png')
+  plt.close()
+
 def spatial_plot_mean(case, delta_df, surf_df, score, particles, active_batches, inactive_batches):
   delta_points = int(np.ceil(np.sqrt(len(delta_df['x'].to_numpy()))))
   xx_delta = delta_df['x'].to_numpy().reshape(delta_points, delta_points)
@@ -104,6 +138,7 @@ def gen_spatial_plots(case, score, particles, active_batches, inactive_batches):
   delta_df = pd.read_csv(f'./{case}/delta_mesh_p{particles}_ab{active_batches}_ib{inactive_batches}.csv')
   surf_df  = pd.read_csv(f'./{case}/surface_mesh_p{particles}_ab{active_batches}_ib{inactive_batches}.csv')
 
+  spatial_plot_n_sigma(case, delta_df, surf_df, score, particles, active_batches, inactive_batches)
   spatial_plot_mean(case, delta_df, surf_df, score, particles, active_batches, inactive_batches)
   spatial_plot_stat_rel(case, delta_df, surf_df, score, particles, active_batches, inactive_batches)
   spatial_plot_rel_diff(case, delta_df, surf_df, score, particles, active_batches, inactive_batches)
