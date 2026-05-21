@@ -83,6 +83,8 @@ def fresh_lwr_pincell(use_surface, particles, active, inactive, use_entropy) -> 
   pincell_model.settings.run_mode = 'eigenvalue'
   uniform_dist = openmc.stats.Box(lower_left, upper_right)
   pincell_model.settings.source = openmc.IndependentSource(space = uniform_dist)
+  if pincell_model.settings.delta_tracking:
+    pincell_model.settings.delta_tracking_majorant_file = "./manual_majorant.csv"
 
   if use_entropy:
     entropy_mesh = openmc.RegularMesh(name = 'Entropy mesh')
