@@ -5,11 +5,10 @@ import sys
 sys.path.append("../../")
 import common
 
-import argparse as ap
+import os
+import numpy as np
 import openmc
 import openmc.model
-import numpy as np
-import pandas as pd
 
 # Adapted from the OpenMC SFR core example problem.
 R_FUEL  = 0.4715
@@ -17,7 +16,7 @@ IR_CLAD = 0.4865
 OR_CLAD = 0.5365
 HEX_PITCH = 1.24
 PIN_HEIGHT = 100.0
-def fresh_sfr_pincell(use_surface, particles, active, inactive, use_entropy) -> openmc.Model:
+def fresh_sfr_pincell(use_surface, particles, active, inactive, use_entropy, manual_maj) -> openmc.Model:
   pincell_model = openmc.Model()
 
   # Define materials.
@@ -77,6 +76,16 @@ def fresh_sfr_pincell(use_surface, particles, active, inactive, use_entropy) -> 
   clad = openmc.Material.mix_materials([cu63, Al2O3], [0.997, 0.003], 'wo')
   pincell_model.materials = openmc.Materials([fuel, sodium, clad])
 
+  # Manually compute and write the majorant cross section.
+  if manual_maj:
+    if os.path.isfile('./manual_majorant.csv'):
+      print('Skipping generation of the majorant cross section as one already exists!')
+    else:
+      print('Generating majorant cross section...')
+      maj_grid, maj_xs = common.compute_domain_majorant(pincell_model.materials)
+      common.write_majorant_csv_file('./manual_majorant.csv', maj_grid, maj_xs)
+      print('...done!')
+
   # Define the pin geometry.
   fuel_or = openmc.ZCylinder(r = R_FUEL)
   clad_ir = openmc.ZCylinder(r = IR_CLAD)
@@ -114,7 +123,7 @@ def fresh_sfr_pincell(use_surface, particles, active, inactive, use_entropy) -> 
   pincell_model.settings.run_mode = 'eigenvalue'
   uniform_dist = openmc.stats.Box(lower_left, upper_right)
   pincell_model.settings.source = openmc.IndependentSource(space = uniform_dist)
-  if pincell_model.settings.delta_tracking:
+  if pincell_model.settings.delta_tracking and manual_maj:
     pincell_model.settings.delta_tracking_majorant_file = "./manual_majorant.csv"
 
   if use_entropy:
@@ -132,7 +141,8 @@ def main():
                       help = 'Whether source convergence should be assessed with Shannon entropy or not.')
   args = parser.parse_args()
 
-  model = fresh_sfr_pincell(args.use_surface, args.particles, args.active_batches, args.inactive_batches, args.entropy)
+  model = fresh_sfr_pincell(args.use_surface, args.particles, args.active_batches,
+                            args.inactive_batches, args.entropy, args.manual)
   model.export_to_model_xml()
 
   if args.run:

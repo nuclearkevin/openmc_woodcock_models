@@ -5,10 +5,11 @@ import sys
 sys.path.append("../../")
 import common
 
+import os
 import argparse as ap
-import openmc
 import numpy as np
 import pandas as pd
+import openmc
 
 # Adapted from the OpenMC LWR pincell example problem.
 FUEL_OR = 0.39218
@@ -16,7 +17,7 @@ CLAD_IR = 0.40005
 CLAD_OR = 0.45720
 PIN_PITCH = 1.25984
 PIN_LENGTH  = 200.0
-def fresh_lwr_pincell(use_surface, particles, active, inactive, use_entropy) -> openmc.Model:
+def fresh_lwr_pincell(use_surface, particles, active, inactive, use_entropy, manual_maj) -> openmc.Model:
   pincell_model = openmc.Model()
 
   # Materials (UO2 fuel, helium as the gas gap, Zircaloy 4 cladding, and borated water coolant).
@@ -46,6 +47,16 @@ def fresh_lwr_pincell(use_surface, particles, active, inactive, use_entropy) -> 
   borated_water.add_element('O', 2.4e-2)
   borated_water.add_s_alpha_beta('c_H_in_H2O')
   pincell_model.materials.append(borated_water)
+
+  # Manually compute and write the majorant cross section.
+  if manual_maj:
+    if os.path.isfile('./manual_majorant.csv'):
+      print('Skipping generation of the majorant cross section as one already exists!')
+    else:
+      print('Generating majorant cross section...')
+      maj_grid, maj_xs = common.compute_domain_majorant(pincell_model.materials)
+      common.write_majorant_csv_file('./manual_majorant.csv', maj_grid, maj_xs)
+      print('...done!')
 
   # Geometry
   ## Radial rings
@@ -83,7 +94,7 @@ def fresh_lwr_pincell(use_surface, particles, active, inactive, use_entropy) -> 
   pincell_model.settings.run_mode = 'eigenvalue'
   uniform_dist = openmc.stats.Box(lower_left, upper_right)
   pincell_model.settings.source = openmc.IndependentSource(space = uniform_dist)
-  if pincell_model.settings.delta_tracking:
+  if pincell_model.settings.delta_tracking and manual_maj:
     pincell_model.settings.delta_tracking_majorant_file = "./manual_majorant.csv"
 
   if use_entropy:
@@ -101,7 +112,8 @@ def main():
                       help = 'Whether source convergence should be assessed with Shannon entropy or not.')
   args = parser.parse_args()
 
-  model = fresh_lwr_pincell(args.use_surface, args.particles, args.active_batches, args.inactive_batches, args.entropy)
+  model = fresh_lwr_pincell(args.use_surface, args.particles, args.active_batches,
+                            args.inactive_batches, args.entropy, args.manual)
   model.export_to_model_xml()
 
   if args.run:
