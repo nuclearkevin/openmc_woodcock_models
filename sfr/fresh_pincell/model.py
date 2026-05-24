@@ -94,8 +94,8 @@ def fresh_sfr_pincell(use_surface, particles, active, inactive, use_entropy, man
                                           orientation='x',
                                           boundary_type='reflective')
 
-  top = openmc.ZPlane(z0 = PIN_HEIGHT / 2.0, boundary_type='reflective')
-  bottom = openmc.ZPlane(z0 = -PIN_HEIGHT / 2.0, boundary_type='reflective')
+  top = openmc.ZPlane(z0 = PIN_HEIGHT / 2.0, boundary_type='vacuum')
+  bottom = openmc.ZPlane(z0 = -PIN_HEIGHT / 2.0, boundary_type='vacuum')
   extents = -top & +bottom
 
   fuel_region = -fuel_or & extents
