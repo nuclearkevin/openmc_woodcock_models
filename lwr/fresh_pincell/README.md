@@ -2,40 +2,40 @@
 
 ## 11th Gen Intel Core™ i7-11800H (16 threads)
 
-Hash: 42ce34d5b0233b7503fd38890f62729a2aaa844e
+Hash: 17fee0db263a492ea66758854e2c16ffd036b225
 
 - Particles: 1,000
 - Active batches: 1,000
 - Inactive batches: 100
 
-| QOI                     | Delta Tracking       | Surface Tracking     |
-| ----------------------- | -------------------- | -------------------- |
-| k-eff  (Collision)      | 1.15066 +/- 0.00121  | 1.14841 +/- 0.00115  |
-| Leakage Fraction        | 0.01230 +/- 0.00014  | 0.01233 +/- 0.00013  |
-| Active Tracking Rate    | 24403.3              | 60841.6              |
-| Inactive Tracking Rate  | 29502.8              | 73126.5              |
+| QOI                     | Delta Tracking (old majorant) | Delta Tracking (manual majorant) | Surface Tracking     |
+| ----------------------- | ----------------------------- | -------------------------------- | -------------------- |
+| k-eff  (Collision)      | 1.14756 +/- 0.00118           | 1.14774 +/- 0.00120              | 1.14874 +/- 0.00114  |
+| Leakage Fraction        | 0.01228 +/- 0.00014           | 0.01197 +/- 0.00013              | 0.01176 +/- 0.00013  |
+| Active Tracking Rate    | 21224.3                       | 91015.3                          | 64222.8              |
+| Inactive Tracking Rate  | 22681.8                       | 112619                           | 81047.3              |
 
 - Particles: 10,000
 - Active batches: 1,000
 - Inactive batches: 100
 
-| QOI                     | Delta Tracking       | Surface Tracking     |
-| ----------------------- | -------------------- | -------------------- |
-| k-eff  (Collision)      | 1.14829 +/- 0.00038  | 1.14810 +/- 0.00038  |
-| Leakage Fraction        | 0.01209 +/- 0.00004  | 0.01217 +/- 0.00004  |
-| Active Tracking Rate    | 24532.8              | 69051.9              |
-| Inactive Tracking Rate  | 28579.2              | 88820.7              |
+| QOI                     | Delta Tracking (old majorant) | Delta Tracking (manual majorant) | Surface Tracking     |
+| ----------------------- | ----------------------------- | -------------------------------- | -------------------- |
+| k-eff  (Collision)      | 1.14910 +/- 0.00037           | 1.14861 +/- 0.00039              | 1.14810 +/- 0.00038  |
+| Leakage Fraction        | 0.01205 +/- 0.00004           | 0.01212 +/- 0.00004              | 0.01217 +/- 0.00004  |
+| Active Tracking Rate    | 21555.2                       | 106448                           | 69051.9              |
+| Inactive Tracking Rate  | 23500.5                       | 156191                           | 88820.7              |
 
 - Particles: 100,000
 - Active batches: 1,000
 - Inactive batches: 100
 
-| QOI                     | Delta Tracking       | Surface Tracking     |
-| ----------------------- | -------------------- | -------------------- |
-| k-eff  (Collision)      | 1.14877 +/- 0.00012  | 1.14886 +/- 0.00012  |
-| Leakage Fraction        | 0.01202 +/- 0.00001  | 0.01206 +/- 0.00001  |
-| Active Tracking Rate    | 22905                | 67889.2              |
-| Inactive Tracking Rate  | 25451.4              | 71035.3              |
+| QOI                     | Delta Tracking (old majorant) | Delta Tracking (manual majorant) | Surface Tracking     |
+| ----------------------- | ----------------------------- | -------------------------------- | -------------------- |
+| k-eff  (Collision)      | 1.14891 +/- 0.00012           | 1.14896 +/- 0.00012              | 1.14886 +/- 0.00012  |
+| Leakage Fraction        | 0.01200 +/- 0.00001           | 0.01203 +/- 0.00001              | 0.01206 +/- 0.00001  |
+| Active Tracking Rate    | 19810.1                       | 117132                           | 67889.2              |
+| Inactive Tracking Rate  | 21721.2                       | 138045                           | 71035.3              |
 
 ### Flux Spectra
 
