@@ -30,22 +30,16 @@ Hash: 4371eb592ea36da3340d85bc8898eb6a4824a0a7
 - Active batches: 1,000
 - Inactive batches: 100
 
-| QOI                     | Delta Tracking (old majorant) | Delta Tracking (manual majorant) | Surface Tracking     |
-| ----------------------- | ----------------------------- | -------------------------------- | -------------------- |
-| k-eff  (Collision)      |             |  | |
-| Leakage Fraction        |             |  | |
-| Active Tracking Rate    |             |  | |
-| Inactive Tracking Rate  |             |  | |
+HPC resources necessary for this case.
 
 ### Flux Spectra
 
 <p align="center">
-  <img src="figures/spectrum_comp_p1000_ab1000_ib100.png" width="300" />
-  <img src="figures/spectrum_comp_p10000_ab1000_ib100.png" width="300" />
-  <img src="figures/spectrum_comp_p100000_ab1000_ib100.png" width="300" />
+  <img src="figures/spectrum_comp_p1000_ab1000_ib100.png" width="450" />
+  <img src="figures/spectrum_comp_p10000_ab1000_ib100.png" width="450" />
 </p>
 <p align="center">
-Spectrum comparisons for 1000, 10000, and 100000 particles per batch (left to right).
+Spectrum comparisons for 1000 and 10000 particles per batch (left to right).
 </p>
 
 ### Flux Distributions
@@ -62,12 +56,6 @@ Spectrum comparisons for 1000, 10000, and 100000 particles per batch (left to ri
 <p align="center">
 10000 particles per batch.
 </p>
-<p align="center">
-  <img src="figures/flux_dis_p100000_ab1000_ib100.png" />
-</p>
-<p align="center">
-100000 particles per batch.
-</p>
 
 ### Flux Statistical Error Distributions
 
@@ -83,22 +71,15 @@ Spectrum comparisons for 1000, 10000, and 100000 particles per batch (left to ri
 <p align="center">
 10000 particles per batch.
 </p>
-<p align="center">
-  <img src="figures/flux_rel_dis_p100000_ab1000_ib100.png" />
-</p>
-<p align="center">
-100000 particles per batch.
-</p>
 
 ### Flux Relative Error Distributions
 
 <p align="center">
-  <img src="figures/flux_spatial_comp_p1000_ab1000_ib100.png" width="300" />
-  <img src="figures/flux_spatial_comp_p10000_ab1000_ib100.png" width="300" />
-  <img src="figures/flux_spatial_comp_p100000_ab1000_ib100.png" width="300" />
+  <img src="figures/flux_spatial_comp_p1000_ab1000_ib100.png" width="450" />
+  <img src="figures/flux_spatial_comp_p10000_ab1000_ib100.png" width="450" />
 </p>
 <p align="center">
-1000, 10000, and 100000 particles per batch (left to right).
+1000 and 10000 particles per batch (left to right).
 </p>
 
 ### Total Reaction Rate Distributions
@@ -115,12 +96,6 @@ Spectrum comparisons for 1000, 10000, and 100000 particles per batch (left to ri
 <p align="center">
 10000 particles per batch.
 </p>
-<p align="center">
-  <img src="figures/total_dis_p100000_ab1000_ib100.png" />
-</p>
-<p align="center">
-100000 particles per batch.
-</p>
 
 ### Total Reaction Rate Statistical Error Distributions
 
@@ -136,20 +111,13 @@ Spectrum comparisons for 1000, 10000, and 100000 particles per batch (left to ri
 <p align="center">
 10000 particles per batch.
 </p>
-<p align="center">
-  <img src="figures/total_rel_dis_p100000_ab1000_ib100.png" />
-</p>
-<p align="center">
-100000 particles per batch.
-</p>
 
 ### Total Reaction Rate Relative Error Distributions
 
 <p align="center">
-  <img src="figures/total_spatial_comp_p1000_ab1000_ib100.png" width="300" />
-  <img src="figures/total_spatial_comp_p10000_ab1000_ib100.png" width="300" />
-  <img src="figures/total_spatial_comp_p100000_ab1000_ib100.png" width="300" />
+  <img src="figures/total_spatial_comp_p1000_ab1000_ib100.png" width="450" />
+  <img src="figures/total_spatial_comp_p10000_ab1000_ib100.png" width="450" />
 </p>
 <p align="center">
-1000, 10000, and 100000 particles per batch (left to right).
+1000 and 10000 particles per batch (left to right).
 </p>
