@@ -2,7 +2,7 @@
 
 ## 11th Gen Intel Core™ i7-11800H (16 threads)
 
-Hash: 78abc529c68ba1258030650ccba6d865fbaa0fbd
+Hash: 17fee0db263a492ea66758854e2c16ffd036b225
 
 - Particles: 1,000
 - Active batches: 1,000
@@ -10,8 +10,8 @@ Hash: 78abc529c68ba1258030650ccba6d865fbaa0fbd
 
 | QOI                     | Delta Tracking       | Surface Tracking     |
 | ----------------------- | -------------------- | -------------------- |
-| k-eff  (Collision)      | 1.00070 +/- 0.00106  | 0.99839 +/- 0.00103  |
-| Leakage Fraction        | 0.67251 +/- 0.00048  | 0.67318 +/- 0.00046  |
+| k-eff  (Collision)      | 0.99909 +/- 0.00107  | 0.99839 +/- 0.00103  |
+| Leakage Fraction        | 0.67269 +/- 0.00045  | 0.67318 +/- 0.00046  |
 | Active Tracking Rate    | 449562               | 1.10926e+06          |
 | Inactive Tracking Rate  | 1.14303e+06          | 1.54026e+06          |
 
@@ -21,8 +21,8 @@ Hash: 78abc529c68ba1258030650ccba6d865fbaa0fbd
 
 | QOI                     | Delta Tracking       | Surface Tracking     |
 | ----------------------- | -------------------- | -------------------- |
-| k-eff  (Collision)      | 0.99904 +/- 0.00034  | 1.00001 +/- 0.00034  |
-| Leakage Fraction        | 0.67278 +/- 0.00015  | 0.67288 +/- 0.00014  |
+| k-eff  (Collision)      | 0.99921 +/- 0.00035  | 1.00001 +/- 0.00034  |
+| Leakage Fraction        | 0.67298 +/- 0.00016  | 0.67288 +/- 0.00014  |
 | Active Tracking Rate    | 1.79253e+06          | 1.73149e+06          |
 | Inactive Tracking Rate  | 1.84586e+06          | 1.73149e+06          |
 
@@ -32,8 +32,8 @@ Hash: 78abc529c68ba1258030650ccba6d865fbaa0fbd
 
 | QOI                     | Delta Tracking       | Surface Tracking     |
 | ----------------------- | -------------------- | -------------------- |
-| k-eff  (Collision)      | 0.99978 +/- 0.00011  | 1.00000 +/- 0.00010  |
-| Leakage Fraction        | 0.67262 +/- 0.00005  | 0.67311 +/- 0.00005  |
+| k-eff  (Collision)      | 0.99959 +/- 0.00011  | 1.00000 +/- 0.00010  |
+| Leakage Fraction        | 0.67263 +/- 0.00005  | 0.67311 +/- 0.00005  |
 | Active Tracking Rate    | 1.8773e+06           | 1.96127e+06          |
 | Inactive Tracking Rate  | 2.39271e+06          | 2.20391e+06          |
 
