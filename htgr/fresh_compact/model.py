@@ -15,7 +15,7 @@ import openmc.model
 # Adapted from the Cardinal TRISO compact tutorial.
 COMPACT_D = 1.27
 HEIGHT = 160.0
-def fresh_htgr_compact(use_surface, particles, active, inactive, use_entropy, manual_maj, run_photon) -> openmc.Model:
+def fresh_htgr_compact(use_surface, particles, active, inactive, use_entropy, run_photon) -> openmc.Model:
   compact_model = openmc.Model()
   # superimposed search lattice
   triso_lattice_shape = (4, 4, int(HEIGHT / 0.125))
