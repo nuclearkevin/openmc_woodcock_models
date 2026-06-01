@@ -15,7 +15,7 @@ R_SPHERE = 6.3849
 NUM_TALLY_MESH_ELEMS = 51
 NUM_ENTROPY_MESH_ELEMS = 5
 
-def jezebel(use_surface, particles, active, inactive, use_entropy) -> openmc.Model:
+def jezebel(use_surface, particles, active, inactive, use_entropy, run_photon) -> openmc.Model:
   jezebel = openmc.Model()
 
   # Material (only need Pu metal)
@@ -33,14 +33,16 @@ def jezebel(use_surface, particles, active, inactive, use_entropy) -> openmc.Mod
   jezebel.geometry = openmc.Geometry([cell])
 
   # Add tallies.
-  tals = common.tallies(energy_bin_edges = np.logspace(np.log10(1e2), np.log10(2.0e7), 101),
+  tals = common.tallies(neutron_energy_bin_edges = np.logspace(np.log10(1e2), np.log10(2.0e7), 101),
+                        photon_energy_bin_edges = np.logspace(np.log10(1e2), np.log10(2.0e7), 101),
                         mesh_dimension = (NUM_TALLY_MESH_ELEMS, NUM_TALLY_MESH_ELEMS, NUM_TALLY_MESH_ELEMS),
                         mesh_ll = (-R_SPHERE, -R_SPHERE, -R_SPHERE),
-                        mesh_ur = ( R_SPHERE,  R_SPHERE,  R_SPHERE))
+                        mesh_ur = ( R_SPHERE,  R_SPHERE,  R_SPHERE),
+                        run_photon=run_photon)
   jezebel.tallies = tals
 
   # Finally, define some run settings.
-  jezebel.settings = common.settings(use_surface, particles, active, inactive)
+  jezebel.settings = common.settings(use_surface, particles, active, inactive, run_photon)
   jezebel.settings.run_mode = 'eigenvalue'
 
   if use_entropy:
@@ -58,12 +60,13 @@ def main():
                       help = 'Whether source convergence should be assessed with Shannon entropy or not.')
   args = parser.parse_args()
 
-  model = jezebel(args.use_surface, args.particles, args.active_batches, args.inactive_batches, args.entropy)
+  model = jezebel(args.use_surface, args.particles, args.active_batches,
+                  args.inactive_batches, args.entropy, args.photon)
   model.export_to_model_xml()
 
   if args.run:
     model.run(apply_tally_results=True, openmc_exec=f'../{common.OPENMC_EXEC}')
-    common.output_results(model, args.use_surface)
+    common.output_results(model, args.use_surface, args.photon)
 
 if __name__ == "__main__":
   main()

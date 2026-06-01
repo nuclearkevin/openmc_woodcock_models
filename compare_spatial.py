@@ -9,7 +9,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 import matplotlib.colors as colors
 
-def spatial_plot_n_sigma(case, delta_df, surf_df, score, particles, active_batches, inactive_batches):
+def spatial_plot_n_sigma(case, delta_df, surf_df, score, particles, active_batches, inactive_batches, particle):
   delta_points = int(np.ceil(np.sqrt(len(delta_df['x'].to_numpy()))))
   xx_delta = delta_df['x'].to_numpy().reshape(delta_points, delta_points)
   yy_delta = delta_df['y'].to_numpy().reshape(delta_points, delta_points)
@@ -40,10 +40,10 @@ def spatial_plot_n_sigma(case, delta_df, surf_df, score, particles, active_batch
   cbar = fig_comp.colorbar(bar, ax=ax_rel, label = f'$n\\sigma$ Agreement')
   cbar.ax.set_yticklabels(['', '1', '', '2', '', '3', '', '>3', ''])
   fig_comp.tight_layout()
-  fig_comp.savefig(f'./{case}/figures/{score}_nsigma_agreement_p{particles}_ab{active_batches}_ib{inactive_batches}.png')
+  fig_comp.savefig(f'./{case}/figures/{particle}_{score}_nsigma_agreement_p{particles}_ab{active_batches}_ib{inactive_batches}.png')
   plt.close()
 
-def spatial_plot_mean(case, delta_df, surf_df, score, particles, active_batches, inactive_batches):
+def spatial_plot_mean(case, delta_df, surf_df, score, particles, active_batches, inactive_batches, particle):
   delta_points = int(np.ceil(np.sqrt(len(delta_df['x'].to_numpy()))))
   xx_delta = delta_df['x'].to_numpy().reshape(delta_points, delta_points)
   yy_delta = delta_df['y'].to_numpy().reshape(delta_points, delta_points)
@@ -64,10 +64,10 @@ def spatial_plot_mean(case, delta_df, surf_df, score, particles, active_batches,
   fig_comp.colorbar(im_1, ax=ax_delta, label = f'{common.SCORE_NAMES[score]} {common.SCORE_UNITS[score]}')
   fig_comp.colorbar(im_2, ax=ax_surf, label = f'{common.SCORE_NAMES[score]} {common.SCORE_UNITS[score]}')
   fig_comp.tight_layout()
-  fig_comp.savefig(f'./{case}/figures/{score}_dis_p{particles}_ab{active_batches}_ib{inactive_batches}.png')
+  fig_comp.savefig(f'./{case}/figures/{particle}_{score}_dis_p{particles}_ab{active_batches}_ib{inactive_batches}.png')
   plt.close()
 
-def spatial_plot_stat_rel(case, delta_df, surf_df, score, particles, active_batches, inactive_batches):
+def spatial_plot_stat_rel(case, delta_df, surf_df, score, particles, active_batches, inactive_batches, particle):
   delta_points = int(np.ceil(np.sqrt(len(delta_df['x'].to_numpy()))))
   xx_delta = delta_df['x'].to_numpy().reshape(delta_points, delta_points)
   yy_delta = delta_df['y'].to_numpy().reshape(delta_points, delta_points)
@@ -104,10 +104,10 @@ def spatial_plot_stat_rel(case, delta_df, surf_df, score, particles, active_batc
   fig_comp_rel.colorbar(im_1, ax=ax_delta_rel, label = f'{common.SCORE_NAMES[score]} Statistical Relative Error [-]\n Min: {min_delta_non_neg:.4e}, Max: {max_delta_non_neg:.4e}')
   fig_comp_rel.colorbar(im_2, ax=ax_surf_rel, label = f'{common.SCORE_NAMES[score]} Statistical Relative Error [-]\n Min: {min_surface_non_neg:.4e}, Max: {max_surface_non_neg:.4e}')
   fig_comp_rel.tight_layout()
-  fig_comp_rel.savefig(f'./{case}/figures/{score}_rel_dis_p{particles}_ab{active_batches}_ib{inactive_batches}.png')
+  fig_comp_rel.savefig(f'./{case}/figures/{particle}_{score}_rel_dis_p{particles}_ab{active_batches}_ib{inactive_batches}.png')
   plt.close()
 
-def spatial_plot_rel_diff(case, delta_df, surf_df, score, particles, active_batches, inactive_batches):
+def spatial_plot_rel_diff(case, delta_df, surf_df, score, particles, active_batches, inactive_batches, particle):
   delta_points = int(np.ceil(np.sqrt(len(delta_df['x'].to_numpy()))))
   xx_delta = delta_df['x'].to_numpy().reshape(delta_points, delta_points)
   yy_delta = delta_df['y'].to_numpy().reshape(delta_points, delta_points)
@@ -131,17 +131,17 @@ def spatial_plot_rel_diff(case, delta_df, surf_df, score, particles, active_batc
   ax_rel.set_title(f'L2 Difference in {common.SCORE_NAMES[score]}: {np.sqrt(np.sum(np.pow(delta_mean - surface_mean, 2.0))):.4e}')
   fig_comp.colorbar(im_3, ax=ax_rel, label = f'Relative Difference in {common.SCORE_NAMES[score]} [-]\n Min: {min_non_neg:.4e}, Max: {max_non_neg:.4e}')
   fig_comp.tight_layout()
-  fig_comp.savefig(f'./{case}/figures/{score}_spatial_comp_p{particles}_ab{active_batches}_ib{inactive_batches}.png')
+  fig_comp.savefig(f'./{case}/figures/{particle}_{score}_spatial_comp_p{particles}_ab{active_batches}_ib{inactive_batches}.png')
   plt.close()
 
-def gen_spatial_plots(case, score, particles, active_batches, inactive_batches):
-  delta_df = pd.read_csv(f'./{case}/delta_mesh_p{particles}_ab{active_batches}_ib{inactive_batches}.csv')
-  surf_df  = pd.read_csv(f'./{case}/surface_mesh_p{particles}_ab{active_batches}_ib{inactive_batches}.csv')
+def gen_spatial_plots(case, score, particles, active_batches, inactive_batches, particle):
+  delta_df = pd.read_csv(f'./{case}/delta_{particle}_mesh_p{particles}_ab{active_batches}_ib{inactive_batches}.csv')
+  surf_df  = pd.read_csv(f'./{case}/surface_{particle}_mesh_p{particles}_ab{active_batches}_ib{inactive_batches}.csv')
 
-  spatial_plot_n_sigma(case, delta_df, surf_df, score, particles, active_batches, inactive_batches)
-  spatial_plot_mean(case, delta_df, surf_df, score, particles, active_batches, inactive_batches)
-  spatial_plot_stat_rel(case, delta_df, surf_df, score, particles, active_batches, inactive_batches)
-  spatial_plot_rel_diff(case, delta_df, surf_df, score, particles, active_batches, inactive_batches)
+  spatial_plot_n_sigma(case, delta_df, surf_df, score, particles, active_batches, inactive_batches, particle)
+  spatial_plot_mean(case, delta_df, surf_df, score, particles, active_batches, inactive_batches, particle)
+  spatial_plot_stat_rel(case, delta_df, surf_df, score, particles, active_batches, inactive_batches, particle)
+  spatial_plot_rel_diff(case, delta_df, surf_df, score, particles, active_batches, inactive_batches, particle)
 
 def main():
   parser = ap.ArgumentParser(prog = 'Compare Spatial Distributions',
@@ -151,8 +151,9 @@ def main():
   parser = common.particle_args(parser)
   args = parser.parse_args()
 
-  for score in common.SCORES:
-    gen_spatial_plots(args.case, score, args.particles, args.active_batches, args.inactive_batches)
+  for particle in ['neutron', 'photon']:
+    for score in common.SCORES:
+      gen_spatial_plots(args.case, score, args.particles, args.active_batches, args.inactive_batches, particle)
 
 if __name__ == "__main__":
   main()

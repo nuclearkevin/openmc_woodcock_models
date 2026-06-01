@@ -8,16 +8,9 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 
-def main():
-  parser = ap.ArgumentParser(prog = 'Compare Spectrum',
-                             description = 'Compares the spectrum between delta tracking and surface tracking.')
-  parser.add_argument('-c', type = str, dest = 'case', required = True,
-                      help = 'Results to post-process in the format \'model\'/\'case\'. As an example, for a fresh LWR pincell this would be lwr/fresh_pincell')
-  parser = common.particle_args(parser)
-  args = parser.parse_args()
-
-  delta_df   = pd.read_csv(f'./{args.case}/delta_spectrum_p{args.particles}_ab{args.active_batches}_ib{args.inactive_batches}.csv')
-  surface_df = pd.read_csv(f'./{args.case}/surface_spectrum_p{args.particles}_ab{args.active_batches}_ib{args.inactive_batches}.csv')
+def plot_spectrum(particle, case, particles, active, inactive):
+  delta_df   = pd.read_csv(f'./{case}/delta_{particle}_spectrum_p{particles}_ab{active}_ib{inactive}.csv')
+  surface_df = pd.read_csv(f'./{case}/surface_{particle}_spectrum_p{particles}_ab{active}_ib{inactive}.csv')
 
   energy_delta  = delta_df['lower_edges'].to_numpy()
   energy_delta = np.append(energy_delta, delta_df['upper_edges'].to_numpy()[-1])
@@ -41,11 +34,23 @@ def main():
   spec_ax.set_xscale('log')
   spec_ax.set_yscale('log')
   spec_ax.set_xlabel('Energy [eV]')
-  spec_ax.set_ylabel('Flux [n-cm/eV-src]')
+  spec_ax.set_ylabel(f'{particle} flux [n-cm/eV-src]')
   spec_ax.grid()
   spec_ax.legend()
-  spec_fig.savefig(f'./{args.case}/figures/spectrum_comp_p{args.particles}_ab{args.active_batches}_ib{args.inactive_batches}.png')
+  spec_fig.savefig(f'./{case}/figures/{particle}_spectrum_comp_p{particles}_ab{active}_ib{inactive}.png')
   plt.close()
+
+def main():
+  parser = ap.ArgumentParser(prog = 'Compare Spectrum',
+                             description = 'Compares the spectrum between delta tracking and surface tracking.')
+  parser.add_argument('-c', type = str, dest = 'case', required = True,
+                      help = 'Results to post-process in the format \'model\'/\'case\'. As an example, for a fresh LWR pincell this would be lwr/fresh_pincell')
+  parser = common.particle_args(parser)
+  args = parser.parse_args()
+
+  plot_spectrum('neutron', args.case, args.particles, args.active_batches, args.inactive_batches)
+  plot_spectrum('photon', args.case, args.particles, args.active_batches, args.inactive_batches)
+
 
 if __name__ == "__main__":
   main()

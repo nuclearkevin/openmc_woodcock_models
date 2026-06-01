@@ -17,7 +17,7 @@ CLAD_IR = 0.40005
 CLAD_OR = 0.45720
 PIN_PITCH = 1.25984
 PIN_LENGTH  = 200.0
-def fresh_lwr_pincell(use_surface, particles, active, inactive, use_entropy, manual_maj) -> openmc.Model:
+def fresh_lwr_pincell(use_surface, particles, active, inactive, use_entropy, run_photon) -> openmc.Model:
   pincell_model = openmc.Model()
 
   # Materials (UO2 fuel, helium as the gas gap, Zircaloy 4 cladding, and borated water coolant).
@@ -48,16 +48,6 @@ def fresh_lwr_pincell(use_surface, particles, active, inactive, use_entropy, man
   borated_water.add_s_alpha_beta('c_H_in_H2O')
   pincell_model.materials.append(borated_water)
 
-  # Manually compute and write the majorant cross section.
-  if manual_maj:
-    if os.path.isfile('./manual_majorant.csv'):
-      print('Skipping generation of the majorant cross section as one already exists!')
-    else:
-      print('Generating majorant cross section...')
-      maj_grid, maj_xs = common.compute_domain_majorant(pincell_model.materials)
-      common.write_majorant_csv_file('./manual_majorant.csv', maj_grid, maj_xs)
-      print('...done!')
-
   # Geometry
   ## Radial rings
   fuel_or = openmc.ZCylinder(r = FUEL_OR, name='Fuel OR')
@@ -83,19 +73,19 @@ def fresh_lwr_pincell(use_surface, particles, active, inactive, use_entropy, man
   upper_right = ( PIN_PITCH / 2.0,  PIN_PITCH / 2.0,  PIN_PITCH / 2.0)
 
   # Add tallies.
-  tals = common.tallies(energy_bin_edges = np.logspace(np.log10(1e-6), np.log10(2.0e7), 101),
+  tals = common.tallies(neutron_energy_bin_edges = np.logspace(np.log10(1e-6), np.log10(2.0e7), 101),
+                        photon_energy_bin_edges = np.logspace(np.log10(1e2), np.log10(2.0e7), 101),
                         mesh_dimension = (51, 51, 1),
                         mesh_ll = lower_left,
-                        mesh_ur = upper_right)
+                        mesh_ur = upper_right,
+                        run_photon = run_photon)
   pincell_model.tallies = tals
 
   # Finally, define some run settings.
-  pincell_model.settings = common.settings(use_surface, particles, active, inactive)
+  pincell_model.settings = common.settings(use_surface, particles, active, inactive, run_photon)
   pincell_model.settings.run_mode = 'eigenvalue'
   uniform_dist = openmc.stats.Box(lower_left, upper_right)
   pincell_model.settings.source = openmc.IndependentSource(space = uniform_dist)
-  if pincell_model.settings.delta_tracking and manual_maj:
-    pincell_model.settings.delta_tracking_majorant_file = "./manual_majorant.csv"
 
   if use_entropy:
     entropy_mesh = openmc.RegularMesh(name = 'Entropy mesh')
@@ -113,12 +103,12 @@ def main():
   args = parser.parse_args()
 
   model = fresh_lwr_pincell(args.use_surface, args.particles, args.active_batches,
-                            args.inactive_batches, args.entropy, args.manual)
+                            args.inactive_batches, args.entropy, args.photon)
   model.export_to_model_xml()
 
   if args.run:
     model.run(apply_tally_results=True, openmc_exec=f'../../{common.OPENMC_EXEC}')
-    common.output_results(model, args.use_surface)
+    common.output_results(model, args.use_surface, args.photon)
 
 if __name__ == "__main__":
   main()

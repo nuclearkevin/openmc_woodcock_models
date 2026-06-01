@@ -16,7 +16,7 @@ IR_CLAD = 0.4865
 OR_CLAD = 0.5365
 HEX_PITCH = 1.24
 PIN_HEIGHT = 100.0
-def fresh_sfr_pincell(use_surface, particles, active, inactive, use_entropy, manual_maj) -> openmc.Model:
+def fresh_sfr_pincell(use_surface, particles, active, inactive, use_entropy, run_photon) -> openmc.Model:
   pincell_model = openmc.Model()
 
   # Define materials.
@@ -76,16 +76,6 @@ def fresh_sfr_pincell(use_surface, particles, active, inactive, use_entropy, man
   clad = openmc.Material.mix_materials([cu63, Al2O3], [0.997, 0.003], 'wo')
   pincell_model.materials = openmc.Materials([fuel, sodium, clad])
 
-  # Manually compute and write the majorant cross section.
-  if manual_maj:
-    if os.path.isfile('./manual_majorant.csv'):
-      print('Skipping generation of the majorant cross section as one already exists!')
-    else:
-      print('Generating majorant cross section...')
-      maj_grid, maj_xs = common.compute_domain_majorant(pincell_model.materials)
-      common.write_majorant_csv_file('./manual_majorant.csv', maj_grid, maj_xs)
-      print('...done!')
-
   # Define the pin geometry.
   fuel_or = openmc.ZCylinder(r = R_FUEL)
   clad_ir = openmc.ZCylinder(r = IR_CLAD)
@@ -112,19 +102,19 @@ def fresh_sfr_pincell(use_surface, particles, active, inactive, use_entropy, man
   # Add tallies.
   lower_left = (-HEX_PITCH / np.sqrt(3.0), -HEX_PITCH / np.sqrt(3.0), -HEX_PITCH / np.sqrt(3.0))
   upper_right = (HEX_PITCH / np.sqrt(3.0),  HEX_PITCH / np.sqrt(3.0),  HEX_PITCH / np.sqrt(3.0))
-  tals = common.tallies(energy_bin_edges = np.logspace(np.log10(1e1), np.log10(2.0e7), 101),
+  tals = common.tallies(neutron_energy_bin_edges = np.logspace(np.log10(1e1), np.log10(2.0e7), 101),
+                        photon_energy_bin_edges = np.logspace(np.log10(1e2), np.log10(2.0e7), 101),
                         mesh_dimension = (51, 51, 1),
                         mesh_ll = lower_left,
-                        mesh_ur = upper_right)
+                        mesh_ur = upper_right,
+                        run_photon = run_photon)
   pincell_model.tallies = tals
 
   # Finally, define some run settings.
-  pincell_model.settings = common.settings(use_surface, particles, active, inactive)
+  pincell_model.settings = common.settings(use_surface, particles, active, inactive, run_photon)
   pincell_model.settings.run_mode = 'eigenvalue'
   uniform_dist = openmc.stats.Box(lower_left, upper_right)
   pincell_model.settings.source = openmc.IndependentSource(space = uniform_dist)
-  if pincell_model.settings.delta_tracking and manual_maj:
-    pincell_model.settings.delta_tracking_majorant_file = "./manual_majorant.csv"
 
   if use_entropy:
     entropy_mesh = openmc.RegularMesh(name = 'Entropy mesh')
@@ -142,12 +132,12 @@ def main():
   args = parser.parse_args()
 
   model = fresh_sfr_pincell(args.use_surface, args.particles, args.active_batches,
-                            args.inactive_batches, args.entropy, args.manual)
+                            args.inactive_batches, args.entropy, args.photon)
   model.export_to_model_xml()
 
   if args.run:
     model.run(apply_tally_results=True, openmc_exec=f'../../{common.OPENMC_EXEC}')
-    common.output_results(model, args.use_surface)
+    common.output_results(model, args.use_surface, args.photon)
 
 if __name__ == "__main__":
   main()

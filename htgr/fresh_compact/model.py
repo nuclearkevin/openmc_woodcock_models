@@ -15,7 +15,7 @@ import openmc.model
 # Adapted from the Cardinal TRISO compact tutorial.
 COMPACT_D = 1.27
 HEIGHT = 160.0
-def fresh_htgr_compact(use_surface, particles, active, inactive, use_entropy, manual_maj) -> openmc.Model:
+def fresh_htgr_compact(use_surface, particles, active, inactive, use_entropy, manual_maj, run_photon) -> openmc.Model:
   compact_model = openmc.Model()
   # superimposed search lattice
   triso_lattice_shape = (4, 4, int(HEIGHT / 0.125))
@@ -63,16 +63,6 @@ def fresh_htgr_compact(use_surface, particles, active, inactive, use_entropy, ma
   coolant.add_element('He', 1.0, 'ao')
   coolant.set_density('g/cm3', 0.125)
   compact_model.materials = openmc.Materials([fuel, graphite_c_buffer, graphite_pyc, sic, graphite_matrix, coolant])
-
-  # Manually compute and write the majorant cross section.
-  if manual_maj:
-    if os.path.isfile('./manual_majorant.csv'):
-      print('Skipping generation of the majorant cross section as one already exists!')
-    else:
-      print('Generating majorant cross section...')
-      maj_grid, maj_xs = common.compute_domain_majorant(compact_model.materials)
-      common.write_majorant_csv_file('./manual_majorant.csv', maj_grid, maj_xs)
-      print('...done!')
 
   # TRISO particle
   radius_pyc_outer   = 429.85e-4
@@ -134,19 +124,19 @@ def fresh_htgr_compact(use_surface, particles, active, inactive, use_entropy, ma
   upper_right = (cell_edge_length, hexagon_half_flat, HEIGHT / 2.0)
 
   # Add tallies.
-  tals = common.tallies(energy_bin_edges = np.logspace(np.log10(1e-6), np.log10(2.0e7), 101),
+  tals = common.tallies(neutron_energy_bin_edges = np.logspace(np.log10(1e-6), np.log10(2.0e7), 101),
+                        photon_energy_bin_edges = np.logspace(np.log10(1e2), np.log10(2.0e7), 101),
                         mesh_dimension = (51, 51, 1),
                         mesh_ll = lower_left,
-                        mesh_ur = upper_right)
+                        mesh_ur = upper_right,
+                        run_photon = run_photon)
   compact_model.tallies = tals
 
   # Finally, define some run settings.
-  compact_model.settings = common.settings(use_surface, particles, active, inactive)
+  compact_model.settings = common.settings(use_surface, particles, active, inactive, run_photon)
   compact_model.settings.run_mode = 'eigenvalue'
   uniform_dist = openmc.stats.Box(lower_left, upper_right)
   compact_model.settings.source = openmc.IndependentSource(space = uniform_dist)
-  if compact_model.settings.delta_tracking and manual_maj:
-    compact_model.settings.delta_tracking_majorant_file = "./manual_majorant.csv"
 
   compact_model.settings.temperature['method'] = 'nearest'
   compact_model.settings.temperature['range'] = (294.0, 500.0)
@@ -173,7 +163,7 @@ def main():
 
   if args.run:
     model.run(apply_tally_results=True, openmc_exec=f'../../{common.OPENMC_EXEC}')
-    common.output_results(model, args.use_surface)
+    common.output_results(model, args.use_surface, args.photon)
 
 if __name__ == "__main__":
   main()

@@ -33,70 +33,75 @@ def parser(model_name) -> ap.ArgumentParser:
                       help = 'Whether surface tracking should be used or not.')
   parser.add_argument('-r', '--run', action = 'store_true', dest = 'run', default=False,
                       help = 'Whether the model should be run or not.')
-  parser.add_argument('-m', '--manual', action = 'store_true', dest = 'manual', default=False,
-                      help = 'Whether a majorant cross section should be generated manual and used.')
+  parser.add_argument('--photon', action = 'store_true', dest = 'photon', default=False,
+                      help = 'Whether the model should run photon transport or not.')
   particle_args(parser)
   return parser
 
 # Common tallies for all models.
-def tallies(energy_bin_edges, mesh_dimension, mesh_ll, mesh_ur) -> openmc.Tallies:
+def tallies(neutron_energy_bin_edges, photon_energy_bin_edges, mesh_dimension, mesh_ll, mesh_ur, run_photon) -> openmc.Tallies:
   tallies = openmc.Tallies()
 
-  # Tally for the spectrum.
-  e_filter = openmc.EnergyFilter(energy_bin_edges)
-  spectrum_tally = openmc.Tally(name = 'Flux spectrum tally', tally_id = 0)
-  spectrum_tally.filters = [e_filter]
-  spectrum_tally.scores = ['flux']
-  spectrum_tally.estimator = 'collision'
-  tallies.append(spectrum_tally)
+  # Tally for the neutron spectrum.
+  n_filter = openmc.ParticleFilter(bins = 'neutron')
+  e_filter_n = openmc.EnergyFilter(neutron_energy_bin_edges)
+  n_spectrum_tally = openmc.Tally(name = 'Neutron flux spectrum tally', tally_id = 0)
+  n_spectrum_tally.filters = [n_filter, e_filter_n]
+  n_spectrum_tally.scores = ['flux']
+  n_spectrum_tally.estimator = 'collision'
+  tallies.append(n_spectrum_tally)
 
-  # Mesh tally for the spatial flux distribution.
+  # Mesh tally for the neutron flux spatial distribution.
   tally_mesh = openmc.RegularMesh(name = 'Tally mesh')
   tally_mesh.dimension = mesh_dimension
   tally_mesh.lower_left = mesh_ll
   tally_mesh.upper_right = mesh_ur
   mesh_filter = openmc.MeshFilter(tally_mesh)
-  spatial_flux_tally = openmc.Tally(name = 'Spatial flux tally', tally_id = 1)
-  spatial_flux_tally.filters = [mesh_filter]
-  spatial_flux_tally.scores = ['flux', 'total']
-  spatial_flux_tally.estimator = 'collision'
-  tallies.append(spatial_flux_tally)
+  n_spatial_flux_tally = openmc.Tally(name = 'Neutron spatial flux tally', tally_id = 1)
+  n_spatial_flux_tally.filters = [n_filter, mesh_filter]
+  n_spatial_flux_tally.scores = ['flux', 'total']
+  n_spatial_flux_tally.estimator = 'collision'
+  tallies.append(n_spatial_flux_tally)
+
+  if run_photon:
+    # Tally for the photon spectrum.
+    p_filter = openmc.ParticleFilter(bins = 'photon')
+    e_filter_p = openmc.EnergyFilter(photon_energy_bin_edges)
+    p_spectrum_tally = openmc.Tally(name = 'Photon spectrum tally', tally_id = 2)
+    p_spectrum_tally.filters = [p_filter, e_filter_p]
+    p_spectrum_tally.scores = ['flux']
+    p_spectrum_tally.estimator = 'collision'
+    tallies.append(p_spectrum_tally)
+
+    # Mesh tally for the photon flux spatial distribution.
+    p_spatial_flux_tally = openmc.Tally(name = 'Photon spatial flux tally', tally_id = 3)
+    p_spatial_flux_tally.filters = [p_filter, mesh_filter]
+    p_spatial_flux_tally.scores = ['flux', 'total']
+    p_spatial_flux_tally.estimator = 'collision'
+    tallies.append(p_spatial_flux_tally)
 
   return tallies
 
 # Common settings.
-def settings(use_surface, particles, active, inactive) -> openmc.Settings:
+def settings(use_surface, particles, active, inactive, run_photon) -> openmc.Settings:
   settings = openmc.Settings()
   settings.batches = active + inactive
   settings.inactive = inactive
   settings.particles = particles
   settings.delta_tracking = (not use_surface)
+  settings.photon_transport = run_photon
 
   return settings
 
-# A function to write common results for the problem.
-def output_results(model, use_surface):
-  inactive_batches = model.settings.inactive
-  active_batches = model.settings.batches - inactive_batches
-  particles = model.settings.particles
-
-  # Extract tally data for the spectrum.
-  energy_edges = model.tallies[0].filters[0].values
-  spectrum_tally_res = model.tallies[0].get_slice(scores=['flux'])
-  spectrum_mean  = spectrum_tally_res.mean.ravel()
-  spectrum_sigma = spectrum_tally_res.std_dev.ravel()
-  spectrum_results_df = pd.DataFrame({ 'lower_edges' : energy_edges[:-1], 'upper_edges' : energy_edges[1:],
-                                        'mean' : spectrum_mean, 'sigma' : spectrum_sigma })
-
-  # Extract tally data for spatial flux plots. Picking the center-plane to make things easier.
-  mesh_dim = model.tallies[1].filters[0].mesh.dimension
-  mesh_ll = model.tallies[1].filters[0].mesh.lower_left
-  mesh_ur = model.tallies[1].filters[0].mesh.upper_right
+def _mesh_tally_output_df(tally):
+  mesh_dim = tally.filters[1].mesh.dimension
+  mesh_ll = tally.filters[1].mesh.lower_left
+  mesh_ur = tally.filters[1].mesh.upper_right
   z_center = int(np.floor(mesh_dim[2] / 2.0))
-  spatial_tally_flux_res = model.tallies[1].get_slice(scores=['flux'])
+  spatial_tally_flux_res = tally.get_slice(scores=['flux'])
   spatial_tally_flux_mean = spatial_tally_flux_res.mean.reshape(mesh_dim[0], mesh_dim[1], mesh_dim[2])[:,:,z_center]
   spatial_tally_flux_std_dev = spatial_tally_flux_res.std_dev.reshape(mesh_dim[0], mesh_dim[1], mesh_dim[2])[:,:,z_center]
-  spatial_tally_total_res = model.tallies[1].get_slice(scores=['total'])
+  spatial_tally_total_res = tally.get_slice(scores=['total'])
   spatial_tally_total_mean = spatial_tally_total_res.mean.reshape(mesh_dim[0], mesh_dim[1], mesh_dim[2])[:,:,z_center]
   spatial_tally_total_std_dev = spatial_tally_total_res.std_dev.reshape(mesh_dim[0], mesh_dim[1], mesh_dim[2])[:,:,z_center]
   # I cannot for the life of me get numpy to do this for me. There has to be a better way...
@@ -113,13 +118,54 @@ def output_results(model, use_surface):
   mesh_results_df = pd.DataFrame({ 'x' : xx.ravel(), 'y' : yy.ravel(),
                                    'flux_mean' : spatial_tally_flux_mean.ravel(), 'flux_sigma' : spatial_tally_flux_std_dev.ravel(),
                                    'total_mean' : spatial_tally_total_mean.ravel(), 'total_sigma' : spatial_tally_total_std_dev.ravel() })
+  return mesh_results_df
 
+
+# A function to write common results for the problem.
+def output_results(model, use_surface, run_photon):
+  inactive_batches = model.settings.inactive
+  active_batches = model.settings.batches - inactive_batches
+  particles = model.settings.particles
+
+  # Extract tally data for the neutron spectrum.
+  neutron_energy_edges = model.tallies[0].filters[1].values
+  neutron_spectrum_tally_res = model.tallies[0].get_slice(scores=['flux'], squeeze=True)
+  neutron_spectrum_mean  = neutron_spectrum_tally_res.mean.ravel()
+  neutron_spectrum_sigma = neutron_spectrum_tally_res.std_dev.ravel()
+  neutron_spectrum_results_df = pd.DataFrame({ 'lower_edges' : neutron_energy_edges[:-1], 'upper_edges' : neutron_energy_edges[1:],
+                                               'mean' : neutron_spectrum_mean, 'sigma' : neutron_spectrum_sigma })
+
+  # Mesh tally results for neutrons.
+  neutron_mesh_results_df = _mesh_tally_output_df(model.tallies[1])
+
+  # Write the neutron tally results.
   if use_surface:
-    spectrum_results_df.to_csv(f'surface_spectrum_p{particles}_ab{active_batches}_ib{inactive_batches}.csv', index=False)
-    mesh_results_df.to_csv(f'surface_mesh_p{particles}_ab{active_batches}_ib{inactive_batches}.csv', index=False)
+    neutron_spectrum_results_df.to_csv(f'surface_neutron_spectrum_p{particles}_ab{active_batches}_ib{inactive_batches}.csv', index=False)
+    neutron_mesh_results_df.to_csv(f'surface_neutron_mesh_p{particles}_ab{active_batches}_ib{inactive_batches}.csv', index=False)
   else:
-    spectrum_results_df.to_csv(f'delta_spectrum_p{particles}_ab{active_batches}_ib{inactive_batches}.csv', index=False)
-    mesh_results_df.to_csv(f'delta_mesh_p{particles}_ab{active_batches}_ib{inactive_batches}.csv', index=False)
+    neutron_spectrum_results_df.to_csv(f'delta_neutron_spectrum_p{particles}_ab{active_batches}_ib{inactive_batches}.csv', index=False)
+    neutron_mesh_results_df.to_csv(f'delta_neutron_mesh_p{particles}_ab{active_batches}_ib{inactive_batches}.csv', index=False)
+
+  # Photon tallies if requested.
+  if run_photon:
+    # Extract tally data for the photon spectrum.
+    photon_energy_edges = model.tallies[2].filters[1].values
+    photon_spectrum_tally_res = model.tallies[2].get_slice(scores=['flux'], squeeze=True)
+    photon_spectrum_mean  = photon_spectrum_tally_res.mean.ravel()
+    photon_spectrum_sigma = photon_spectrum_tally_res.std_dev.ravel()
+    photon_spectrum_results_df = pd.DataFrame({ 'lower_edges' : photon_energy_edges[:-1], 'upper_edges' : photon_energy_edges[1:],
+                                                'mean' : photon_spectrum_mean, 'sigma' : photon_spectrum_sigma })
+
+    # Mesh tally results for photons.
+    photon_mesh_results_df = _mesh_tally_output_df(model.tallies[3])
+
+    # Write the photon tally results.
+    if use_surface:
+      photon_spectrum_results_df.to_csv(f'surface_photon_spectrum_p{particles}_ab{active_batches}_ib{inactive_batches}.csv', index=False)
+      photon_mesh_results_df.to_csv(f'surface_photon_mesh_p{particles}_ab{active_batches}_ib{inactive_batches}.csv', index=False)
+    else:
+      photon_spectrum_results_df.to_csv(f'delta_photon_spectrum_p{particles}_ab{active_batches}_ib{inactive_batches}.csv', index=False)
+      photon_mesh_results_df.to_csv(f'delta_photon_mesh_p{particles}_ab{active_batches}_ib{inactive_batches}.csv', index=False)
 
 # A function which computes the maximum URR cross section at a given energy point
 # for nuclides in a given material.
@@ -225,8 +271,3 @@ def compute_domain_majorant(material_collection):
     union_majorant = np.maximum(union_majorant, np.interp(grid_union, per_material_maj[id]['grid'], per_material_maj[id]['xs'], left=0.0, right=0.0))
 
   return grid_union, union_majorant
-
-# A function to write the majorant to a csv file for testing.
-def write_majorant_csv_file(file, maj_grid, maj_xs):
-  df = pd.DataFrame({'energy' : maj_grid, 'majorant' : maj_xs })
-  df.to_csv(file, sep=',', index=False, header=False)
