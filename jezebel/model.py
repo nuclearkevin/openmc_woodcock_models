@@ -15,7 +15,7 @@ R_SPHERE = 6.3849
 NUM_TALLY_MESH_ELEMS = 51
 NUM_ENTROPY_MESH_ELEMS = 5
 
-def jezebel(use_surface, particles, active, inactive, use_entropy, run_photon) -> openmc.Model:
+def jezebel(use_surface, particles, active, inactive, use_entropy, run_photon, run_event) -> openmc.Model:
   jezebel = openmc.Model()
 
   # Material (only need Pu metal)
@@ -38,11 +38,11 @@ def jezebel(use_surface, particles, active, inactive, use_entropy, run_photon) -
                         mesh_dimension = (NUM_TALLY_MESH_ELEMS, NUM_TALLY_MESH_ELEMS, NUM_TALLY_MESH_ELEMS),
                         mesh_ll = (-R_SPHERE, -R_SPHERE, -R_SPHERE),
                         mesh_ur = ( R_SPHERE,  R_SPHERE,  R_SPHERE),
-                        run_photon=run_photon)
+                        run_photon = run_photon)
   jezebel.tallies = tals
 
   # Finally, define some run settings.
-  jezebel.settings = common.settings(use_surface, particles, active, inactive, run_photon)
+  jezebel.settings = common.settings(use_surface, particles, active, inactive, run_photon, run_event)
   jezebel.settings.run_mode = 'eigenvalue'
 
   if use_entropy:
@@ -61,12 +61,12 @@ def main():
   args = parser.parse_args()
 
   model = jezebel(args.use_surface, args.particles, args.active_batches,
-                  args.inactive_batches, args.entropy, args.photon)
+                  args.inactive_batches, args.entropy, args.photon, args.event)
   model.export_to_model_xml()
 
   if args.run:
-    model.run(apply_tally_results=True, openmc_exec=f'../{common.OPENMC_EXEC}')
-    common.output_results(model, args.use_surface, args.photon)
+    sp_path = model.run(apply_tally_results=True, openmc_exec=f'../{common.OPENMC_EXEC}')
+    common.output_results(model, sp_path, args.use_surface, args.photon, args.event)
 
 if __name__ == "__main__":
   main()

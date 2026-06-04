@@ -15,7 +15,7 @@ import openmc.model
 # Adapted from the Cardinal TRISO compact tutorial.
 COMPACT_D = 1.27
 HEIGHT = 160.0
-def fresh_htgr_compact(use_surface, particles, active, inactive, use_entropy, run_photon) -> openmc.Model:
+def fresh_htgr_compact(use_surface, particles, active, inactive, use_entropy, run_photon, run_event) -> openmc.Model:
   compact_model = openmc.Model()
   # superimposed search lattice
   triso_lattice_shape = (4, 4, int(HEIGHT / 0.125))
@@ -133,7 +133,7 @@ def fresh_htgr_compact(use_surface, particles, active, inactive, use_entropy, ru
   compact_model.tallies = tals
 
   # Finally, define some run settings.
-  compact_model.settings = common.settings(use_surface, particles, active, inactive, run_photon)
+  compact_model.settings = common.settings(use_surface, particles, active, inactive, run_photon, run_event)
   compact_model.settings.run_mode = 'eigenvalue'
   uniform_dist = openmc.stats.Box(lower_left, upper_right)
   compact_model.settings.source = openmc.IndependentSource(space = uniform_dist)
@@ -158,12 +158,12 @@ def main():
   args = parser.parse_args()
 
   model = fresh_htgr_compact(args.use_surface, args.particles, args.active_batches,
-                             args.inactive_batches, args.entropy, args.manual)
+                             args.inactive_batches, args.entropy, args.manual, args.event)
   model.export_to_model_xml()
 
   if args.run:
-    model.run(apply_tally_results=True, openmc_exec=f'../../{common.OPENMC_EXEC}')
-    common.output_results(model, args.use_surface, args.photon)
+    sp_path = model.run(apply_tally_results=True, openmc_exec=f'../../{common.OPENMC_EXEC}')
+    common.output_results(model, sp_path, args.use_surface, args.photon, args.event)
 
 if __name__ == "__main__":
   main()

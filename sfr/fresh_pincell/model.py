@@ -16,7 +16,7 @@ IR_CLAD = 0.4865
 OR_CLAD = 0.5365
 HEX_PITCH = 1.24
 PIN_HEIGHT = 100.0
-def fresh_sfr_pincell(use_surface, particles, active, inactive, use_entropy, run_photon) -> openmc.Model:
+def fresh_sfr_pincell(use_surface, particles, active, inactive, use_entropy, run_photon, run_event) -> openmc.Model:
   pincell_model = openmc.Model()
 
   # Define materials.
@@ -111,7 +111,7 @@ def fresh_sfr_pincell(use_surface, particles, active, inactive, use_entropy, run
   pincell_model.tallies = tals
 
   # Finally, define some run settings.
-  pincell_model.settings = common.settings(use_surface, particles, active, inactive, run_photon)
+  pincell_model.settings = common.settings(use_surface, particles, active, inactive, run_photon, run_event)
   pincell_model.settings.run_mode = 'eigenvalue'
   uniform_dist = openmc.stats.Box(lower_left, upper_right)
   pincell_model.settings.source = openmc.IndependentSource(space = uniform_dist)
@@ -132,12 +132,12 @@ def main():
   args = parser.parse_args()
 
   model = fresh_sfr_pincell(args.use_surface, args.particles, args.active_batches,
-                            args.inactive_batches, args.entropy, args.photon)
+                            args.inactive_batches, args.entropy, args.photon, args.event)
   model.export_to_model_xml()
 
   if args.run:
-    model.run(apply_tally_results=True, openmc_exec=f'../../{common.OPENMC_EXEC}')
-    common.output_results(model, args.use_surface, args.photon)
+    sp_path = model.run(apply_tally_results=True, openmc_exec=f'../../{common.OPENMC_EXEC}')
+    common.output_results(model, sp_path, args.use_surface, args.photon, args.event)
 
 if __name__ == "__main__":
   main()

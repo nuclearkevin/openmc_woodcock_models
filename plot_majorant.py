@@ -24,7 +24,7 @@ def main():
   plt.plot(energy, xs)
   plt.loglog()
   plt.xlabel('Energy eV]')
-  plt.ylabel('Majorant Cross Section  [cm^-1]')
+  plt.ylabel('Majorant Cross Section [cm^-1]')
   plt.show()
 
 if __name__ == '__main__':
