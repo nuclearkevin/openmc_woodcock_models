@@ -168,8 +168,8 @@ def output_results(model, sp_path, use_surface, run_photon, run_event):
   neutron_mesh_results_df = _mesh_tally_output_df(model.tallies[1])
 
   integral_results_df.to_csv(f'{integral_name}_{tr_type}_{alg}_integral_p{particles}_ab{active_batches}_ib{inactive_batches}.csv', index=False)
-  neutron_spectrum_results_df.to_csv(f'{tr_type}_{alg}_neutron_spectrum_p{particles}_ab{active_batches}_ib{inactive_batches}.csv', index=False)
-  neutron_mesh_results_df.to_csv(f'{tr_type}_{alg}_neutron_mesh_p{particles}_ab{active_batches}_ib{inactive_batches}.csv', index=False)
+  neutron_spectrum_results_df.to_csv(f'{integral_name}_{tr_type}_{alg}_neutron_spectrum_p{particles}_ab{active_batches}_ib{inactive_batches}.csv', index=False)
+  neutron_mesh_results_df.to_csv(f'{integral_name}_{tr_type}_{alg}_neutron_mesh_p{particles}_ab{active_batches}_ib{inactive_batches}.csv', index=False)
 
   # Photon tallies if requested.
   if run_photon:
@@ -180,5 +180,5 @@ def output_results(model, sp_path, use_surface, run_photon, run_event):
     photon_mesh_results_df = _mesh_tally_output_df(model.tallies[3])
 
     # Write the photon tally results.
-    photon_spectrum_results_df.to_csv(f'{tr_type}_{alg}_photon_spectrum_p{particles}_ab{active_batches}_ib{inactive_batches}.csv', index=False)
-    photon_mesh_results_df.to_csv(f'{tr_type}_{alg}_photon_mesh_p{particles}_ab{active_batches}_ib{inactive_batches}.csv', index=False)
+    photon_spectrum_results_df.to_csv(f'{integral_name}_{tr_type}_{alg}_photon_spectrum_p{particles}_ab{active_batches}_ib{inactive_batches}.csv', index=False)
+    photon_mesh_results_df.to_csv(f'{integral_name}_{tr_type}_{alg}_photon_mesh_p{particles}_ab{active_batches}_ib{inactive_batches}.csv', index=False)

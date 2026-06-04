@@ -1,14 +1,17 @@
+#!/usr/bin/env python3
+
 import os
 
 # Key is the particular type of case. Value is the subcase (which contains the model file).
 CASES = {
-  'jezebel' : ['']#,
-  #'lwr' : ['fresh_pincell'],
+  #'jezebel' : [''],
+  'lwr' : ['fresh_pincell']#,
   #'sfr' : ['fresh_pincell'],
   #'htgr' : ['fresh_compact']
 }
 
-# Key is whether photon transport is running or not. Value is the number of particles.
+# Key is whether photon transport is running or not. Value is the number of particles to run.
+# Photon transport is quite slow; benchmarking only runs up to 10,000 particles per batch.
 PARTICLES = {
   True : [1000, 10000],
   False : [1000, 10000, 100000]
@@ -28,6 +31,7 @@ def run_model(run_surface, run_photon, run_event, num_particles):
   if code:
     raise Exception(f'Failed to run the model with error code {code}')
 
+# Start at 100,000 particles per batch in event-based transport with surface tracking.
 def main():
   repo_root_dir = os.getcwd()
   for case in CASES.keys():
