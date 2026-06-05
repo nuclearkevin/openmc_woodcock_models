@@ -158,7 +158,7 @@ def main():
   args = parser.parse_args()
 
   model = fresh_htgr_compact(args.use_surface, args.particles, args.active_batches,
-                             args.inactive_batches, args.entropy, args.manual, args.event)
+                             args.inactive_batches, args.entropy, args.photon, args.event)
   model.export_to_model_xml()
 
   if args.run:
