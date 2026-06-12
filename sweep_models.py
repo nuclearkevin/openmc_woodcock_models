@@ -4,10 +4,10 @@ import os
 
 # Key is the particular type of case. Value is the subcase (which contains the model file).
 CASES = {
-  #'jezebel' : [''],
-  'lwr' : ['fresh_pincell']#,
-  #'sfr' : ['fresh_pincell'],
-  #'htgr' : ['fresh_compact']
+  'jezebel' : [''],
+  'lwr' : ['fresh_pincell'],
+  'sfr' : ['fresh_pincell'],
+  'htgr' : ['fresh_compact']
 }
 
 # Key is whether photon transport is running or not. Value is the number of particles to run.
@@ -27,11 +27,11 @@ def run_model(run_surface, run_photon, run_event, num_particles):
     exec_str += ' --event'
 
   print(f'Running {exec_str}')
-  code = os.system(exec_str)
-  if code:
-    raise Exception(f'Failed to run the model with error code {code}')
+  err_code = os.system(exec_str)
+  if err_code:
+    raise Exception(f'Failed to run the model with error code {err_code}')
 
-# Start at 100,000 particles per batch in event-based transport with surface tracking.
+# Run surface tracking next.
 def main():
   repo_root_dir = os.getcwd()
   for case in CASES.keys():
