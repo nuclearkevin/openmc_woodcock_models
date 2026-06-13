@@ -41,8 +41,6 @@ def linf_err_spatial(particle, path, particles, active, inactive, algorithm):
 def plot_error_l2_spatial():
   data = {}
   for particle in ['neutron', 'photon']:
-    first = ''
-    sim_type = 'coupled' if particle == 'photon' else 'single'
     fig, ax = plt.subplots()
     data[particle] = {}
     num_proc = 0
@@ -66,17 +64,15 @@ def plot_error_l2_spatial():
     ax.loglog()
     ax.grid()
     ax.set_xlabel('Particles per Batch (-)')
-    ax.set_ylabel('$L_{2}$ Error (total reactions / src)')
+    ax.set_ylabel('$L_{2}$ Difference (total reactions / src)')
     ax.legend(ncol=3, loc='upper right')
-    ax.set_title(f'{particle.capitalize()} Spatial Total Reaction Rates')
+    ax.set_title(f'Difference in {particle.capitalize()} Spatial Total Reaction Rates')
     fig.tight_layout()
     fig.savefig(f'./figures/spatial/{particle}_spatial_l2_err.png')
 
 def plot_error_linf_spatial():
   data = {}
   for particle in ['neutron', 'photon']:
-    first = ''
-    sim_type = 'coupled' if particle == 'photon' else 'single'
     fig, ax = plt.subplots()
     data[particle] = {}
     num_proc = 0
@@ -100,8 +96,9 @@ def plot_error_linf_spatial():
     ax.loglog()
     ax.grid()
     ax.set_xlabel('Particles per Batch (-)')
-    ax.set_ylabel('$L_{\\infty}$ Error (total reactions / src)')
+    ax.set_ylabel('$L_{\\infty}$ Difference (total reactions / src)')
     ax.legend(ncol=3, loc='upper right')
+    ax.set_title(f'Difference in {particle.capitalize()} Spatial Total Reaction Rates')
     fig.tight_layout()
     fig.savefig(f'./figures/spatial/{particle}_spatial_linf_err.png')
 

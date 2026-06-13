@@ -100,7 +100,7 @@ def plot_leakage(integral_data):
         mean = leakage[track_type][path][sim_type]
         std_dev = 3.0*np.array(leakage_std[track_type][path][sim_type])
         ax.errorbar(particles, mean, yerr=std_dev, capsize=4, fmt='o', label=TRACK_LABEL[track_type])
-      ax.set_title(CASE_LABELS[path])
+      ax.set_title(f'{CASE_LABELS[path]}: Leakage')
       ax.set_xscale('log')
       ax.legend()
       ax.set_ylabel('Leakage Fraction $\\pm 3\\sigma$ (-)')
@@ -147,10 +147,10 @@ def plot_keff(integral_data):
         mean = k_collision[track_type][path][sim_type]
         std_dev = 3.0*np.array(k_collision_std[track_type][path][sim_type])
         ax.errorbar(particles, mean, yerr=std_dev, capsize=4, fmt='o', label=TRACK_LABEL[track_type])
-      ax.set_title(CASE_LABELS[path])
+      ax.set_title(CASE_LABELS[path]+': $k_{eff}$')
       ax.set_xscale('log')
       ax.legend()
-      ax.set_ylabel('$k_{eff} \\pm 3\\sigma$, Collision Estimator (-)')
+      ax.set_ylabel('$k_{eff} \\pm 3\\sigma$ (-), Collision Estimator')
       ax.set_xlabel('Particles per Batch (-)')
       ax.grid()
       fig.tight_layout()

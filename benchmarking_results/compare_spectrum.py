@@ -18,6 +18,26 @@ CASE_LABELS = {
   'htgr/fresh_compact' : 'HTGR Compact ($15\\%$ PF)'
 }
 
+def l2_err_spectrum(particle, path, particles, active, inactive, algorithm):
+  if particle == 'photon':
+    delta_df   = pd.read_csv(f'./{path}/coupled_delta_{algorithm}_{particle}_spectrum_p{particles}_ab{active}_ib{inactive}.csv')
+    surface_df = pd.read_csv(f'./{path}/coupled_surface_{algorithm}_{particle}_spectrum_p{particles}_ab{active}_ib{inactive}.csv')
+  else:
+    delta_df   = pd.read_csv(f'./{path}/single_delta_{algorithm}_{particle}_spectrum_p{particles}_ab{active}_ib{inactive}.csv')
+    surface_df = pd.read_csv(f'./{path}/single_surface_{algorithm}_{particle}_spectrum_p{particles}_ab{active}_ib{inactive}.csv')
+
+  return np.sqrt(np.sum(np.pow(delta_df['mean'].to_numpy() - surface_df['mean'].to_numpy(), 2.0)))
+
+def linf_err_spectrum(particle, path, particles, active, inactive, algorithm):
+  if particle == 'photon':
+    delta_df   = pd.read_csv(f'./{path}/coupled_delta_{algorithm}_{particle}_spectrum_p{particles}_ab{active}_ib{inactive}.csv')
+    surface_df = pd.read_csv(f'./{path}/coupled_surface_{algorithm}_{particle}_spectrum_p{particles}_ab{active}_ib{inactive}.csv')
+  else:
+    delta_df   = pd.read_csv(f'./{path}/single_delta_{algorithm}_{particle}_spectrum_p{particles}_ab{active}_ib{inactive}.csv')
+    surface_df = pd.read_csv(f'./{path}/single_surface_{algorithm}_{particle}_spectrum_p{particles}_ab{active}_ib{inactive}.csv')
+
+  return np.max(np.abs(delta_df['mean'].to_numpy() - surface_df['mean'].to_numpy()))
+
 def plot_spectrum(case, particle, path, particles, active, inactive, algorithm):
   if particle == 'photon':
     delta_df   = pd.read_csv(f'./{path}/coupled_delta_{algorithm}_{particle}_spectrum_p{particles}_ab{active}_ib{inactive}.csv')
@@ -48,38 +68,16 @@ def plot_spectrum(case, particle, path, particles, active, inactive, algorithm):
   spec_ax.set_xscale('log')
   spec_ax.set_yscale('log')
   spec_ax.set_xlabel('Energy (eV)')
-  spec_ax.set_ylabel(f'{particle.capitalize()} Flux (particles-cm / eV-src)')
+  spec_ax.set_ylabel(f'{particle.capitalize()} Flux ({particle}-cm / eV-src)')
   spec_ax.grid()
   spec_ax.legend()
-  spec_ax.set_title(f'{CASE_LABELS[path]} - 100000 Particles per Batch')
+  spec_ax.set_title(f'{CASE_LABELS[path]} {particle.capitalize()} Spectrum - 100000 Particles per Batch')
   spec_fig.savefig(f'./figures/spectra/{case}_{particle}_spectrum_comp.png')
   plt.close()
-
-def l2_err_spectrum(particle, path, particles, active, inactive, algorithm):
-  if particle == 'photon':
-    delta_df   = pd.read_csv(f'./{path}/coupled_delta_{algorithm}_{particle}_spectrum_p{particles}_ab{active}_ib{inactive}.csv')
-    surface_df = pd.read_csv(f'./{path}/coupled_surface_{algorithm}_{particle}_spectrum_p{particles}_ab{active}_ib{inactive}.csv')
-  else:
-    delta_df   = pd.read_csv(f'./{path}/single_delta_{algorithm}_{particle}_spectrum_p{particles}_ab{active}_ib{inactive}.csv')
-    surface_df = pd.read_csv(f'./{path}/single_surface_{algorithm}_{particle}_spectrum_p{particles}_ab{active}_ib{inactive}.csv')
-
-  return np.sqrt(np.sum(np.pow(delta_df['mean'].to_numpy() - surface_df['mean'].to_numpy(), 2.0)))
-
-def linf_err_spectrum(particle, path, particles, active, inactive, algorithm):
-  if particle == 'photon':
-    delta_df   = pd.read_csv(f'./{path}/coupled_delta_{algorithm}_{particle}_spectrum_p{particles}_ab{active}_ib{inactive}.csv')
-    surface_df = pd.read_csv(f'./{path}/coupled_surface_{algorithm}_{particle}_spectrum_p{particles}_ab{active}_ib{inactive}.csv')
-  else:
-    delta_df   = pd.read_csv(f'./{path}/single_delta_{algorithm}_{particle}_spectrum_p{particles}_ab{active}_ib{inactive}.csv')
-    surface_df = pd.read_csv(f'./{path}/single_surface_{algorithm}_{particle}_spectrum_p{particles}_ab{active}_ib{inactive}.csv')
-
-  return np.max(np.abs(delta_df['mean'].to_numpy() - surface_df['mean'].to_numpy()))
 
 def plot_error_l2_spectrum():
   data = {}
   for particle in ['neutron', 'photon']:
-    first = ''
-    sim_type = 'coupled' if particle == 'photon' else 'single'
     fig, ax = plt.subplots()
     data[particle] = {}
     num_proc = 0
@@ -103,17 +101,15 @@ def plot_error_l2_spectrum():
     ax.loglog()
     ax.grid()
     ax.set_xlabel('Particles per Batch (-)')
-    ax.set_ylabel('$L_{2}$ Error (particles-cm / eV-src)')
+    ax.set_ylabel(f'$L_2$ Difference ({particle}-cm / eV-src)')
     ax.legend(ncol=3, loc='upper right')
-    ax.set_title(f'{particle.capitalize()} Flux Error')
+    ax.set_title(f'{particle.capitalize()} Spectrum Difference')
     fig.tight_layout()
     fig.savefig(f'./figures/spectra/{particle}_spectrum_l2_err.png')
 
 def plot_error_linf_spectrum():
   data = {}
   for particle in ['neutron', 'photon']:
-    first = ''
-    sim_type = 'coupled' if particle == 'photon' else 'single'
     fig, ax = plt.subplots()
     data[particle] = {}
     num_proc = 0
@@ -137,9 +133,9 @@ def plot_error_linf_spectrum():
     ax.loglog()
     ax.grid()
     ax.set_xlabel('Particles per Batch (-)')
-    ax.set_ylabel('$L_{\\infty}$ Error (particles-cm / eV-src)')
+    ax.set_ylabel(f'$L_\\infty$ Difference ({particle}-cm / eV-src)')
     ax.legend(ncol=3, loc='upper right')
-    ax.set_title(f'{particle.capitalize()} Spectra')
+    ax.set_title(f'{particle.capitalize()} Spectrum Difference')
     fig.tight_layout()
     fig.savefig(f'./figures/spectra/{particle}_spectrum_linf_err.png')
 
