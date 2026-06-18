@@ -4,6 +4,7 @@
 *.xml
 *.csv
 *.pyc
+*.pkl
 
 # VSCode stuff
 /.vscode/*
