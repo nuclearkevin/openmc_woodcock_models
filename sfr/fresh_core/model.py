@@ -12,7 +12,7 @@ import common
 import openmc
 import openmc.data as data
 import numpy as np
-import scipy as scp
+import scipy as sp
 
 # PARAMETERS
 # Core
@@ -83,7 +83,7 @@ def fuel_density(T):
 def sodium_density(T):
   temps = np.array([126.85, 226.85, 326.85, 426.85, 526.85, 626.85, 726.85])
   rhos = np.array([919, 897, 874, 852, 828, 805, 781])
-  rho_func = scp.interpolate.interp1d(temps,rhos)
+  rho_func = sp.interpolate.interp1d(temps,rhos)
   return np.float64(rho_func(T))
 
 def mat_volume(num_assems):

@@ -1,0 +1,151 @@
+<?xml version='1.0' encoding='utf-8'?>
+<materials>
+  <material id="1" name="Coolant">
+    <density value="0.0029526656875514356" units="g/cm3"/>
+    <nuclide name="He3" ao="2e-06"/>
+    <nuclide name="He4" ao="0.999998"/>
+  </material>
+  <material id="2" name="Reflector">
+    <density value="2.7986999999999997" units="g/cm3"/>
+    <nuclide name="Be9" ao="1.0"/>
+    <nuclide name="O16" ao="0.9976206"/>
+    <nuclide name="O17" ao="0.000379"/>
+    <nuclide name="O18" ao="0.0020004"/>
+    <sab name="c_Be_in_BeO"/>
+    <sab name="c_O_in_BeO"/>
+  </material>
+  <material id="7" name="Graphite">
+    <density value="1.80606" units="g/cm3"/>
+    <nuclide name="C12" ao="0.988922"/>
+    <nuclide name="C13" ao="0.011078"/>
+    <sab name="c_Graphite"/>
+  </material>
+  <material id="8" name="Moderator">
+    <density value="4.085" units="g/cm3"/>
+    <nuclide name="H1" ao="1.799719668"/>
+    <nuclide name="H2" ao="0.000280332"/>
+    <nuclide name="Y89" ao="1.0"/>
+    <sab name="c_Y_in_YH2"/>
+    <sab name="c_H_in_YH2"/>
+  </material>
+  <material id="9" name="Chromium">
+    <density value="7.19" units="g/cm3"/>
+    <nuclide name="Cr50" ao="0.04345"/>
+    <nuclide name="Cr52" ao="0.83789"/>
+    <nuclide name="Cr53" ao="0.09501"/>
+    <nuclide name="Cr54" ao="0.02365"/>
+  </material>
+  <material id="10" name="Envelope">
+    <density value="7.055" units="g/cm3"/>
+    <nuclide name="Cr50" ao="0.00868"/>
+    <nuclide name="Cr52" ao="0.16762"/>
+    <nuclide name="Cr53" ao="0.01898"/>
+    <nuclide name="Cr54" ao="0.00472"/>
+    <nuclide name="Fe54" ao="0.04379"/>
+    <nuclide name="Fe56" ao="0.69249"/>
+    <nuclide name="Fe57" ao="0.01661"/>
+    <nuclide name="Fe58" ao="0.002114"/>
+    <nuclide name="Al27" ao="0.045"/>
+  </material>
+  <material id="12" name="control_rod_He">
+    <density value="0.003332436100363302" units="g/cm3"/>
+    <nuclide name="He3" ao="2e-06"/>
+    <nuclide name="He4" ao="0.999998"/>
+  </material>
+  <material id="13" name="control_rod">
+    <density value="2.47" units="g/cm3"/>
+    <nuclide name="B10" ao="0.15856"/>
+    <nuclide name="B11" ao="0.64144"/>
+    <nuclide name="C12" ao="0.1977844"/>
+    <nuclide name="C13" ao="0.0022156"/>
+  </material>
+  <material id="15" name="homog_fuel" depletable="true">
+    <density value="2.276550287657061" units="g/cm3"/>
+    <nuclide name="U235" ao="0.0027552348764770676"/>
+    <nuclide name="U238" ao="0.011055543147697909"/>
+    <nuclide name="C12" ao="0.9146517338659726"/>
+    <nuclide name="C13" ao="0.010246017287275686"/>
+    <nuclide name="O16" ao="0.02071572648063783"/>
+    <nuclide name="Si28" ao="0.0374228791641884"/>
+    <nuclide name="Si29" ao="0.0019002270287239481"/>
+    <nuclide name="Si30" ao="0.0012526381490266022"/>
+    <sab name="c_Graphite"/>
+  </material>
+  <material id="16" name="homog_poison" depletable="true">
+    <density value="2.2367202706975298" units="g/cm3"/>
+    <nuclide name="Gd152" ao="4.331649392349059e-05"/>
+    <nuclide name="Gd154" ao="0.0004660119941786664"/>
+    <nuclide name="Gd155" ao="0.0031432842784858213"/>
+    <nuclide name="Gd156" ao="0.0043196459579846564"/>
+    <nuclide name="Gd157" ao="0.003281424220825945"/>
+    <nuclide name="Gd158" ao="0.005175363595110541"/>
+    <nuclide name="Gd160" ao="0.004497445783182898"/>
+    <nuclide name="O16" ao="0.06277946843306835"/>
+    <nuclide name="C12" ao="0.906143333876503"/>
+    <nuclide name="C13" ao="0.01015070536673661"/>
+    <sab name="c_Graphite"/>
+  </material>
+  <material id="17" name="noon_drum_BeO">
+    <density value="2.7986999999999997" units="g/cm3"/>
+    <nuclide name="Be9" ao="0.5"/>
+    <nuclide name="O16" ao="0.4988103"/>
+    <nuclide name="O17" ao="0.0001895"/>
+    <nuclide name="O18" ao="0.0010002"/>
+    <sab name="c_Be_in_BeO"/>
+    <sab name="c_O_in_BeO"/>
+  </material>
+  <material id="18" name="noon_drum_B4C">
+    <density value="2.47" units="g/cm3"/>
+    <nuclide name="B10" ao="0.768"/>
+    <nuclide name="B11" ao="0.03200000000000002"/>
+    <nuclide name="C12" ao="0.1977844"/>
+    <nuclide name="C13" ao="0.0022156"/>
+  </material>
+  <material id="19" name="noon_drum_He">
+    <density value="0.003332436100363302" units="g/cm3"/>
+    <nuclide name="He3" ao="2e-06"/>
+    <nuclide name="He4" ao="0.999998"/>
+  </material>
+  <material id="20" name="one_drum_BeO">
+    <density value="2.7986999999999997" units="g/cm3"/>
+    <nuclide name="Be9" ao="0.5"/>
+    <nuclide name="O16" ao="0.4988103"/>
+    <nuclide name="O17" ao="0.0001895"/>
+    <nuclide name="O18" ao="0.0010002"/>
+    <sab name="c_Be_in_BeO"/>
+    <sab name="c_O_in_BeO"/>
+  </material>
+  <material id="21" name="one_drum_B4C">
+    <density value="2.47" units="g/cm3"/>
+    <nuclide name="B10" ao="0.768"/>
+    <nuclide name="B11" ao="0.03200000000000002"/>
+    <nuclide name="C12" ao="0.1977844"/>
+    <nuclide name="C13" ao="0.0022156"/>
+  </material>
+  <material id="22" name="one_drum_He">
+    <density value="0.003332436100363302" units="g/cm3"/>
+    <nuclide name="He3" ao="2e-06"/>
+    <nuclide name="He4" ao="0.999998"/>
+  </material>
+  <material id="23" name="two_drum_BeO">
+    <density value="2.7986999999999997" units="g/cm3"/>
+    <nuclide name="Be9" ao="0.5"/>
+    <nuclide name="O16" ao="0.4988103"/>
+    <nuclide name="O17" ao="0.0001895"/>
+    <nuclide name="O18" ao="0.0010002"/>
+    <sab name="c_Be_in_BeO"/>
+    <sab name="c_O_in_BeO"/>
+  </material>
+  <material id="24" name="two_drum_B4C">
+    <density value="2.47" units="g/cm3"/>
+    <nuclide name="B10" ao="0.768"/>
+    <nuclide name="B11" ao="0.03200000000000002"/>
+    <nuclide name="C12" ao="0.1977844"/>
+    <nuclide name="C13" ao="0.0022156"/>
+  </material>
+  <material id="25" name="two_drum_He">
+    <density value="0.003332436100363302" units="g/cm3"/>
+    <nuclide name="He3" ao="2e-06"/>
+    <nuclide name="He4" ao="0.999998"/>
+  </material>
+</materials>

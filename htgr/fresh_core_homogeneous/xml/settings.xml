@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<settings>
+  <run_mode>eigenvalue</run_mode>
+  <particles>10000</particles>
+  <batches>1100</batches>
+  <inactive>100</inactive>
+  <source type="independent" strength="1.0" particle="neutron">
+    <space type="box">
+      <parameters>0.0 0.0 0.0 104.78907385791709 240.0 121.0</parameters>
+    </space>
+  </source>
+  <output>
+    <summary>false</summary>
+  </output>
+  <temperature_default>1003.4000000000001</temperature_default>
+  <temperature_method>interpolation</temperature_method>
+  <temperature_range>290.0 2501.0</temperature_range>
+  <delta_tracking>true</delta_tracking>
+  <delta_tracking_threshold>0.9</delta_tracking_threshold>
+</settings>
