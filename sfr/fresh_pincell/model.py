@@ -126,7 +126,7 @@ def fresh_sfr_pincell(use_surface, particles, active, inactive, use_entropy, run
   return pincell_model
 
 def main():
-  parser = common.parser('LWR Fresh Pincell')
+  parser = common.parser('SFR Fresh Pincell')
   parser.add_argument('--entropy', action = 'store_true', dest = 'entropy', default = False,
                       help = 'Whether source convergence should be assessed with Shannon entropy or not.')
   args = parser.parse_args()
