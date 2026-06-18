@@ -134,9 +134,9 @@ def spatial_plot_rel_diff(case, delta_df, surf_df, score, particles, active_batc
   fig_comp.savefig(f'./{case}/figures/{algorithm}_{particle}_{score}_spatial_comp_p{particles}_ab{active_batches}_ib{inactive_batches}.png')
   plt.close()
 
-def gen_spatial_plots(dump_all, case, score, particles, active_batches, inactive_batches, particle, algorithm):
-  delta_df = pd.read_csv(f'./{case}/delta_{algorithm}_{particle}_mesh_p{particles}_ab{active_batches}_ib{inactive_batches}.csv')
-  surf_df  = pd.read_csv(f'./{case}/surface_{algorithm}_{particle}_mesh_p{particles}_ab{active_batches}_ib{inactive_batches}.csv')
+def gen_spatial_plots(dump_all, case, score, particles, active_batches, inactive_batches, particle, algorithm, sim_type):
+  delta_df = pd.read_csv(f'./{case}/{sim_type}_delta_{algorithm}_{particle}_mesh_p{particles}_ab{active_batches}_ib{inactive_batches}.csv')
+  surf_df  = pd.read_csv(f'./{case}/{sim_type}_surface_{algorithm}_{particle}_mesh_p{particles}_ab{active_batches}_ib{inactive_batches}.csv')
 
   if dump_all:
     spatial_plot_n_sigma(case, delta_df, surf_df, score, particles, active_batches, inactive_batches, particle, algorithm)
@@ -149,15 +149,28 @@ def main():
                              description = 'Compares spatial distributions between delta tracking and surface tracking.')
   parser.add_argument('--all', action = 'store_true', dest = 'dump_all', default=False,
                       help = 'Whether all plots should be generated.')
+  parser.add_argument('--type', type = str, dest = 'sim_type', default="single",
+                      help = 'The type of simulation. Options are \'single\' and \'coupled\'.')
+  parser.add_argument('--alg', type = str, dest = 'algorithm', default="history",
+                      help = 'The Monte Carlo algorithm. Options are \'history\' and \'event\'.')
   parser.add_argument(type = str, dest = 'case',
                       help = 'Results to post-process in the format \'model\'/\'case\'. As an example, for a fresh LWR pincell this would be lwr/fresh_pincell')
   parser = common.particle_args(parser)
   args = parser.parse_args()
 
-  for algorithm in ['history', 'event']:
-    for particle in ['neutron', 'photon']:
-      for score in common.SCORES:
-        gen_spatial_plots(args.dump_all, args.case, score, args.particles, args.active_batches, args.inactive_batches, particle, algorithm)
+  particles = []
+  if args.sim_type == "single":
+    particles = ['neutron']
+  elif args.sim_type == "coupled":
+    particles = ['neutron', 'photon']
+
+  if args.algorithm not in ['history', 'event']:
+    raise Exception('Incorrect algorithm! Options are \'history\' or \'event\'')
+
+  for particle in particles:
+    for score in common.SCORES:
+      gen_spatial_plots(args.dump_all, args.case, score, args.particles, args.active_batches,
+                        args.inactive_batches, particle, args.algorithm, args.sim_type)
 
 if __name__ == "__main__":
   main()

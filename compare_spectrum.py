@@ -8,9 +8,9 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 
-def plot_spectrum(particle, case, particles, active, inactive, algorithm):
-  delta_df   = pd.read_csv(f'./{case}/delta_{algorithm}_{particle}_spectrum_p{particles}_ab{active}_ib{inactive}.csv')
-  surface_df = pd.read_csv(f'./{case}/surface_{algorithm}_{particle}_spectrum_p{particles}_ab{active}_ib{inactive}.csv')
+def plot_spectrum(particle, case, particles, active, inactive, algorithm, sim_type):
+  delta_df   = pd.read_csv(f'./{case}/{sim_type}_delta_{algorithm}_{particle}_spectrum_p{particles}_ab{active}_ib{inactive}.csv')
+  surface_df = pd.read_csv(f'./{case}/{sim_type}_surface_{algorithm}_{particle}_spectrum_p{particles}_ab{active}_ib{inactive}.csv')
 
   energy_delta  = delta_df['lower_edges'].to_numpy()
   energy_delta = np.append(energy_delta, delta_df['upper_edges'].to_numpy()[-1])
@@ -44,14 +44,28 @@ def plot_spectrum(particle, case, particles, active, inactive, algorithm):
 def main():
   parser = ap.ArgumentParser(prog = 'Compare Spectrum',
                              description = 'Compares the spectrum between delta tracking and surface tracking.')
+  parser.add_argument('--type', type = str, dest = 'sim_type', default="single",
+                      help = 'The type of simulation. Options are \'single\' and \'coupled\'.')
+  parser.add_argument('--alg', type = str, dest = 'algorithm', default="history",
+                      help = 'The Monte Carlo algorithm. Options are \'history\' and \'event\'.')
   parser.add_argument(type = str, dest = 'case',
                       help = 'Results to post-process in the format \'model\'/\'case\'. As an example, for a fresh LWR pincell this would be lwr/fresh_pincell')
   parser = common.particle_args(parser)
   args = parser.parse_args()
 
-  for algorithm in ['history', 'event']:
-    for particle in ['neutron', 'photon']:
-      plot_spectrum(particle, args.case, args.particles, args.active_batches, args.inactive_batches, algorithm)
+  particles = []
+  if args.sim_type == "single":
+    particles = ['neutron']
+  elif args.sim_type == "coupled":
+    particles = ['neutron', 'photon']
+
+  if args.algorithm not in ['history', 'event']:
+    raise Exception('Incorrect algorithm! Options are \'history\' or \'event\'')
+
+  for particle in particles:
+    for score in common.SCORES:
+      plot_spectrum(particle, args.case, args.particles, args.active_batches,
+                    args.inactive_batches, args.algorithm, args.sim_type)
 
 
 if __name__ == "__main__":
