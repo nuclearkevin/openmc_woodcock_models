@@ -29,6 +29,7 @@ def gcmr_fresh_core(use_surface, particles, active, inactive, use_entropy, run_p
   gcmr_model.settings.run_mode = 'eigenvalue'
   uniform_dist = openmc.stats.Box(lower_left, upper_right)
   gcmr_model.settings.source = openmc.IndependentSource(space = uniform_dist)
+  gcmr_model.settings.output = {'summary' : False}
 
   gcmr_model.settings.temperature = {
     'default' : 1003.4000000000001,
@@ -47,7 +48,7 @@ def gcmr_fresh_core(use_surface, particles, active, inactive, use_entropy, run_p
   return gcmr_model
 
 def main():
-  parser = common.parser('HTGR Fresh Core Based on the GCMR (Homogenized Model)')
+  parser = common.parser('HTGR Fresh Core Based on the GCMR (Fully Heterogeneous Model)')
   parser.add_argument('--entropy', action = 'store_true', dest = 'entropy', default = False,
                       help = 'Whether source convergence should be assessed with Shannon entropy or not.')
   args = parser.parse_args()
