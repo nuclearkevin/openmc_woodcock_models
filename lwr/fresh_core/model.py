@@ -16,7 +16,8 @@ def beavrs_fresh_core(use_surface, particles, active, inactive, use_entropy, run
   upper_right = (161.2773, 161.2773, 419.704)
 
   # Add tallies.
-  tals = common.tallies(neutron_energy_bin_edges = np.logspace(np.log10(1e-6), np.log10(2.0e7), 101),
+  tals = common.tallies(run_surface = use_surface,
+                        neutron_energy_bin_edges = np.logspace(np.log10(1e-6), np.log10(2.0e7), 101),
                         photon_energy_bin_edges = np.logspace(np.log10(1e2), np.log10(2.0e7), 101),
                         mesh_dimension = (60, 60, 1),
                         mesh_ll = lower_left,

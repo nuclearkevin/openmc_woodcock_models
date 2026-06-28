@@ -40,8 +40,10 @@ def parser(model_name) -> ap.ArgumentParser:
   return parser
 
 # Common tallies for all models.
-def tallies(neutron_energy_bin_edges, photon_energy_bin_edges, mesh_dimension, mesh_ll, mesh_ur, run_photon) -> openmc.Tallies:
+def tallies(run_surface, neutron_energy_bin_edges, photon_energy_bin_edges, mesh_dimension, mesh_ll, mesh_ur, run_photon) -> openmc.Tallies:
   tallies = openmc.Tallies()
+
+  estimator = 'tracklength' if run_surface else 'collision'
 
   # Tally for the neutron spectrum.
   n_filter = openmc.ParticleFilter(bins = 'neutron')
@@ -49,7 +51,7 @@ def tallies(neutron_energy_bin_edges, photon_energy_bin_edges, mesh_dimension, m
   n_spectrum_tally = openmc.Tally(name = 'Neutron flux spectrum tally', tally_id = 0)
   n_spectrum_tally.filters = [n_filter, e_filter_n]
   n_spectrum_tally.scores = ['flux']
-  n_spectrum_tally.estimator = 'collision'
+  n_spectrum_tally.estimator = estimator
   tallies.append(n_spectrum_tally)
 
   # Mesh tally for the neutron flux spatial distribution.
@@ -61,7 +63,7 @@ def tallies(neutron_energy_bin_edges, photon_energy_bin_edges, mesh_dimension, m
   n_spatial_flux_tally = openmc.Tally(name = 'Neutron spatial flux tally', tally_id = 1)
   n_spatial_flux_tally.filters = [n_filter, mesh_filter]
   n_spatial_flux_tally.scores = ['flux', 'total']
-  n_spatial_flux_tally.estimator = 'collision'
+  n_spatial_flux_tally.estimator = estimator
   tallies.append(n_spatial_flux_tally)
 
   if run_photon:
@@ -71,14 +73,14 @@ def tallies(neutron_energy_bin_edges, photon_energy_bin_edges, mesh_dimension, m
     p_spectrum_tally = openmc.Tally(name = 'Photon spectrum tally', tally_id = 2)
     p_spectrum_tally.filters = [p_filter, e_filter_p]
     p_spectrum_tally.scores = ['flux']
-    p_spectrum_tally.estimator = 'collision'
+    p_spectrum_tally.estimator = estimator
     tallies.append(p_spectrum_tally)
 
     # Mesh tally for the photon flux spatial distribution.
     p_spatial_flux_tally = openmc.Tally(name = 'Photon spatial flux tally', tally_id = 3)
     p_spatial_flux_tally.filters = [p_filter, mesh_filter]
     p_spatial_flux_tally.scores = ['flux', 'total']
-    p_spatial_flux_tally.estimator = 'collision'
+    p_spatial_flux_tally.estimator = estimator
     tallies.append(p_spatial_flux_tally)
 
   return tallies
@@ -156,6 +158,8 @@ def output_results(model, sp_path, use_surface, run_photon, run_event):
                                        'active_rate' : [active_rate],
                                        'k_coll_mean' : [sp.global_tallies[0][3]],
                                        'k_coll_std_dev' : [sp.global_tallies[0][4]],
+                                       'k_tl_mean' : [sp.global_tallies[1][3]],
+                                       'k_tl_std_dev' : [sp.global_tallies[1][4]],
                                        'k_combined_mean' : [sp.keff.nominal_value],
                                        'k_combined_std_dev' : [sp.keff.std_dev],
                                        'leakage_mean' : [sp.global_tallies[3][3]],
