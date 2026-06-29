@@ -16,7 +16,8 @@ def gcmr_fresh_core(use_surface, particles, active, inactive, use_entropy, run_p
   upper_right = (104.78907385791709, 240.0, 121.0)
 
   # Add tallies.
-  tals = common.tallies(neutron_energy_bin_edges = np.logspace(np.log10(1e-6), np.log10(2.0e7), 101),
+  tals = common.tallies(run_surface = use_surface,
+                        neutron_energy_bin_edges = np.logspace(np.log10(1e-6), np.log10(2.0e7), 101),
                         photon_energy_bin_edges = np.logspace(np.log10(1e2), np.log10(2.0e7), 101),
                         mesh_dimension = (51, 1, 51),
                         mesh_ll = lower_left,

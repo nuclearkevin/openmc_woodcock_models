@@ -413,7 +413,8 @@ def fresh_sfr_core(use_surface, particles, active, inactive, use_entropy, run_ph
   # Add tallies.
   lower_left = (-core_diameter/2, -core_diameter/2, 0)
   upper_right = (core_diameter/2, core_diameter/2, core_height)
-  tals = common.tallies(neutron_energy_bin_edges = np.logspace(np.log10(1e1), np.log10(2.0e7), 101),
+  tals = common.tallies(run_surface = use_surface,
+                        neutron_energy_bin_edges = np.logspace(np.log10(1e1), np.log10(2.0e7), 101),
                         photon_energy_bin_edges = np.logspace(np.log10(1e2), np.log10(2.0e7), 101),
                         mesh_dimension = (51, 51, 1),
                         mesh_ll = lower_left,

@@ -33,7 +33,8 @@ def jezebel(use_surface, particles, active, inactive, use_entropy, run_photon, r
   jezebel.geometry = openmc.Geometry([cell])
 
   # Add tallies.
-  tals = common.tallies(neutron_energy_bin_edges = np.logspace(np.log10(1e2), np.log10(2.0e7), 101),
+  tals = common.tallies(run_surface = use_surface,
+                        neutron_energy_bin_edges = np.logspace(np.log10(1e2), np.log10(2.0e7), 101),
                         photon_energy_bin_edges = np.logspace(np.log10(1e2), np.log10(2.0e7), 101),
                         mesh_dimension = (NUM_TALLY_MESH_ELEMS, NUM_TALLY_MESH_ELEMS, NUM_TALLY_MESH_ELEMS),
                         mesh_ll = (-R_SPHERE, -R_SPHERE, -R_SPHERE),
