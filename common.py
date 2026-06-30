@@ -32,6 +32,8 @@ def parser(model_name) -> ap.ArgumentParser:
                       help = 'Whether surface tracking should be used or not.')
   parser.add_argument('-r', '--run', action = 'store_true', dest = 'run', default=False,
                       help = 'Whether the model should be run or not.')
+  parser.add_argument('-o', '--output', action = 'store_true', dest = 'output', default=False,
+                      help = 'Whether the model should output post-processed data or not.')
   parser.add_argument('--photon', action = 'store_true', dest = 'photon', default=False,
                       help = 'Whether the model should run photon transport or not.')
   parser.add_argument('--event', action = 'store_true', dest = 'event', default=False,

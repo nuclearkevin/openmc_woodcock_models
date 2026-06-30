@@ -140,5 +140,10 @@ def main():
     sp_path = model.run(apply_tally_results=True, openmc_exec=f'../../{common.OPENMC_EXEC}')
     common.output_results(model, sp_path, args.use_surface, args.photon, args.event)
 
+  if args.output and not args.run:
+    sp_path = f'./statepoint.{int(args.active_batches + args.inactive_batches)}.h5'
+    model.apply_tally_results(sp_path)
+    common.output_results(model, sp_path, args.use_surface, args.photon, args.event)
+
 if __name__ == "__main__":
   main()
